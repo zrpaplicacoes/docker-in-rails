@@ -1,0 +1,112 @@
+version: '2.1'
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  bundler-data:
+    driver: local
+
+services:
+  db:
+    hostname: db
+    image: postgres:9.5.6-alpine
+    volumes:
+      - ./db/dumps:/db/dumps
+      - ./tmp:/tmp
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 1x2y3z4u
+
+  redis:
+    hostname: redis
+    image: redis:3.2.4-alpine
+    volumes:
+      - redis-data:/var/lib/redis
+    command: redis-server --appendonly yes
+
+  base: &base
+    hostname: base
+    image: unidas/admin:nightly
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes:
+      - .:/srv/app
+      - bundler-data:/srv/bin/app/bundle
+    environment: &env
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/unidas_admin_development
+      REDIS_URL: redis://redis.local:6379
+      SIDEKIQ_CONCURRENCY: 5
+      SIDEKIQ_TIMEOUT: 10
+      RACK_ENV: development
+      RAILS_ENV: development
+      AWS_DEFAULT_REGION: sa-east-1
+      AWS_REGION: sa-east-1
+    stdin_open: true
+    tty: true
+
+  app:
+    <<: *base
+    hostname: app
+    environment: *env
+    command: bundle exec rails server -p 3000 -b 0.0.0.0
+    ports: ['80:3000']
+    links:
+      - db:db.local
+      - redis:redis.local
+
+  sidekiq:
+    <<: *base
+    hostname: sidekiq
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    links:
+      - db:db.local
+      - redis:redis.local
+    ports: []
+    environment: *env
+
+  shoryuken:
+    <<: *base
+    hostname: shoryuken
+    command: bundle exec shoryuken --rails -C config/shoryuken.yml
+    links:
+      - db:db.local
+      - redis:redis.local
+    ports: []
+    environment: *env
+
+  bundler:
+    <<: *base
+    hostname: builder
+    command: bundle install -j4 --retry 3
+    links: []
+    ports: []
+    environment: *env
+
+  test:
+    <<: *base
+    command: bundle exec guard start --no-bundler-warning --no-interactions
+    links:
+      - db:db.local
+      - redis:redis.local
+    environment:
+      <<: *env
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/unidas_admin_test
+      RACK_ENV: test
+      RAILS_ENV: test
+    ports: []
+
+  ci:
+    <<: *base
+    command:  bundle exec spec
+    links:
+      - db:db.local
+      - redis:redis.local
+    environment:
+      <<: *env
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/unidas_admin_test
+      RACK_ENV: test
+      RAILS_ENV: test
+    ports: []

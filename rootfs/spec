@@ -1,0 +1,20 @@
+#!/usr/bin/env ash
+echo "Running application quality approvement..."
+
+set -e
+
+if [ "$RAILS_ENV" != "test" ]; then
+  echo "Environment error... RAILS_ENV should be test, currently is $RAILS_ENV"
+  exit 1
+fi
+
+echo "Testing application security..."
+bundle exec brakeman -zAq
+
+echo "Testing spec/ folder..."
+bundle exec check_or_setup_db
+bundle exec rspec spec
+
+echo "Finished quality approvement..."
+
+exit 0

@@ -1,0 +1,93 @@
+#!/usr/bin/env ash
+
+set -e
+
+# Load Environment
+echo "[INFO] Loading environment..."
+eval "$(load_env)"
+echo "[INFO] Environment loaded!"
+
+# Export default variables
+export APP_PATH='/srv/app'
+export APP_TEMP_PATH="$APP_PATH/tmp"
+export APP_SETUP_LOCK="$APP_TEMP_PATH/setup.lock"
+export APP_SETUP_WAIT="2"
+
+# Functions
+gems_up_to_date() { bundle check 1> /dev/null; }
+lock_setup() { mkdir -p $APP_TEMP_PATH && touch $APP_SETUP_LOCK; }
+unlock_setup() { rm -rf $APP_SETUP_LOCK; }
+wait_setup() { echo "Waiting for app setup to finish..."; sleep $APP_SETUP_WAIT; }
+
+if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
+  export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+  
+  echo "[INFO] Booting application on development/test mode..."
+  echo "[INFO] RACK_ENV=$RACK_ENV and RAILS_ENV=$RAILS_ENV"
+  echo "[INFO] Database is set as $DATABASE_URL"
+
+  trap unlock_setup HUP INT QUIT TERM EXIT
+
+  if [ -z "$1" ]; then set -- /bin/ash "$@"; fi
+
+  while [ -f $APP_SETUP_LOCK ]; do wait_setup; done
+
+  lock_setup
+
+  echo "[INFO] Checking system bundle"
+  if ! gems_up_to_date; then
+    echo "[INFO] Installing/Updating Rails dependencies"
+    bundle install -j4 --retry 3
+    echo "[INFO] Gems updated"
+  else
+    echo "[INFO] Gems up to date"
+  fi
+
+  echo "[INFO] Checking database consistency against current schema..."
+  check_or_setup_db
+
+  unlock_setup
+
+  if [ "$1" = "bundle" -a "$2" = "exec" -a "$3" = "rails" -o "$3" = "shoryuken" -o "$3" = "sidekiq"\
+       -o "$3" = "puma" -o "$3" = "guard" -o "$3" = "spec" -o "$1" = "rails" -o "$1" = "puma" -o \
+       "$1" = "sidekiq" -o "$1" = "shoryuken" -o "$1" = "guard" -o "$1" = "rspec"
+     ]
+  then
+    rm -rf "${APP_TEMP_PATH}/pids/server.pid";
+  fi
+  
+  # Configure user
+  export UID=${USER_ID:-9001}
+  export USER=${USER:-user}
+  export HOME=/home/$USER
+
+  echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
+  adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
+
+  # 10: Execute the given or default command in the $USER namespace:
+  echo "[INFO] Executing the given command: '$@'"
+  exec /usr/local/bin/gosu $USER "$@"
+fi
+
+if [ "$RAILS_ENV" = "production" ]; then
+  echo "[WARN] Booting application on production mode..."
+
+  echo "[INFO] Executing the given command: '$@'"
+  exec "$@"
+fi
+
+if [ "$RAILS_ENV" != 'production' -a "$RAILS_ENV" != 'test' -a "$RAILS_ENV" != "development" ]; then
+  echo "[WARN] Booting application on unknow mode..."
+
+  # Configure user
+  export UID=${USER_ID:-9001}
+  export USER=${USER:-user}
+  export HOME=/home/$USER
+
+  echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
+  adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
+
+  # 10: Execute the given or default command in the $USER namespace:
+  echo "[INFO] Executing the given command: '$@'"
+  exec /usr/local/bin/gosu $USER "$@"
+fi

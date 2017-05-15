@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+def parse(file_contents)
+  file_contents.each_line.inject('') do |result, line|
+    return result unless (line =~ /(RAILS_ENV|RACK_ENV)/).nil?
+    result + "export #{line.chomp};"
+  end
+end
+
+if File.exist?('.env') || File.exist?('.env.sample') && ENV['RAILS_ENV'] != 'production'
+  filename = File.exist?('.env') ? '.env' : '.env.sample'
+  puts parse(File.read(filename))
+elsif ENV['RAILS_ENV'] == 'production'
+  puts '[WARN] Loading production environment...'.colorize(:red)
+  # require 'aws-sdk'
+  # 
+  # s3_client = Aws::S3::Client.new(region: 'us-east-1')
+  # kms_client = Aws::KMS::Client.new(region: 'us-east-1')
+  # 
+  # # retrieve cmk key id
+  # aliases = kms_client.list_aliases.aliases
+  # key = aliases.find { |alias_struct| alias_struct.alias_name == 'alias/unidas-env' }
+  # key_id = key.target_key_id
+  # 
+  # # encryption client
+  # s3_encryption_client = Aws::S3::Encryption::Client.new(
+  #   client: s3_client,
+  #   kms_key_id: key_id,
+  #   kms_client: kms_client
+  # )
+  # 
+  # # retrieve and decrypt .env from s3
+  # response = s3_encryption_client.get_object(
+  #   bucket: 'unidas-secrets',
+  #   key: ".env.admin.#{ENV['RAILS_ENV']}"
+  # )
+  # puts parse(response.body.read)
+end
