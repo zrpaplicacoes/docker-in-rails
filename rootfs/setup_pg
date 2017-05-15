@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/local/bin/ruby
 # frozen_string_literal: true
 
 require 'rubygems'
@@ -21,23 +21,23 @@ exit begin
   0
 rescue PG::ConnectionBad
   unless (connection_tries -= 1).zero?
-    puts "[ERROR] Retrying DB connection #{connection_tries} more times...".colorize(:red)
+    puts ":::: Retrying DB connection #{connection_tries} more times...".colorize(:red)
     sleep ENV.fetch('APP_SETUP_WAIT', '5').to_i
     retry
   end
   1
 
 rescue ActiveRecord::PendingMigrationError
-  puts '[WARN] Migrations are pending, running latest migrations'.colorize(:yellow)
+  puts ':::: Migrations are pending, running latest migrations'.colorize(:yellow)
   return 1 unless exec('rake db:migrate')
   0
 rescue ActiveRecord::NoDatabaseError
-  puts '[ERROR] Database not found...'.colorize(:red)
+  puts ':::: Database not found...'.colorize(:red)
   return 1 unless DatabaseTasks.create_current
   if DatabaseTasks.load_schema_current
-    puts '[INFO] Schema loaded correctly...'
+    puts ':::: Schema loaded correctly...'.colorize(:green)
   else
-    puts '[ERROR] Schema could not be loaded...'.colorize(:red)
+    puts ':::: Schema could not be loaded...'.colorize(:red)
   end
   retry
 ensure

@@ -1,13 +1,14 @@
-#!/usr/bin/env ash
+#!/bin/ash
 
 set -e
 
+source /usr/local/bin/colors
 source /usr/local/bin/logo
 
 # Load Environment
-echo "[INFO] Loading environment..."
+echo ":::: Loading environment..."
 eval "$(load_env)"
-echo "[INFO] Environment loaded!"
+echo -e "${BGreen}:::: Environment loaded!${Color_Off}"
 
 # Export default variables
 export APP_PATH='/srv/app'
@@ -18,7 +19,7 @@ export APP_SETUP_WAIT="2"
 # Functions
 lock_setup() { mkdir -p $APP_TEMP_PATH && touch $APP_SETUP_LOCK; }
 unlock_setup() { rm -rf $APP_SETUP_LOCK; }
-wait_setup() { echo "Waiting for app setup to finish..."; sleep $APP_SETUP_WAIT; }
+wait_setup() { echo -e "${BRed}Waiting for app setup to finish...${Color_Off}"; sleep $APP_SETUP_WAIT; }
 gems_up_to_date() { bundle check 1> /dev/null; }
 
 configure_user() {
@@ -28,7 +29,7 @@ configure_user() {
   export HOME=/home/$USER
   
   if [ ! "$USER" = "root" ]; then
-    echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
+    echo ":::: Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
     adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
     # change all application files ownership to current user
     if [ -d "$APP_PATH" ]; then
@@ -40,9 +41,9 @@ configure_user() {
 if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
   export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
   
-  echo "[INFO] Booting application on development/test mode..."
-  echo "[INFO] RACK_ENV=$RACK_ENV and RAILS_ENV=$RAILS_ENV"
-  echo "[INFO] Database is set as $DATABASE_URL"
+  echo -e "${BGreen}:::: Booting application on development/test mode...${Color_Off}"
+  echo ":::: RACK_ENV=$RACK_ENV and RAILS_ENV=$RAILS_ENV"
+  echo ":::: Database is set as $DATABASE_URL"
 
   trap unlock_setup HUP INT QUIT TERM EXIT
 
@@ -53,16 +54,16 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
     
     lock_setup
     
-    echo "[INFO] Checking system bundle"
+    echo ":::: Checking system bundle"
     if ! gems_up_to_date; then
-      echo "[INFO] Installing/Updating Rails dependencies"
+      echo ":::: Installing/Updating Rails dependencies"
       bundle install -j4 --retry 3
-      echo "[INFO] Gems updated"
+      echo -e "${BGreen}:::: Successfully updated dependencies${Color_Off}"
     else
-      echo "[INFO] Gems up to date"
+      echo -e "${BGreen}:::: Dependencies are up to date${Color_Off}"
     fi
     
-    echo "[INFO] Checking database consistency against current schema..."
+    echo ":::: Checking database consistency against current schema..."
     if [ -z $DATABASE_ADAPTER ]; then
       bundle exec setup_pg
     fi
@@ -74,15 +75,15 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
 fi
 
 if [ "$RAILS_ENV" = "production" ]; then
-  echo "[WARN] Booting application on production mode..."
+  echo -e "${BRed}:::: Booting application on production mode...${Color_Off}"
 fi
 
 if [ -z $RAILS_ENV ]
 then
-  echo "[WARN] Booting application on unknow mode..."
+  echo -e "${BRed}:::: Booting application on unknow mode...${Color_Off}"
 fi
 
 # calls command
 configure_user
-echo "[INFO] Executing the given command: '$@'"
+echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
 exec /usr/local/bin/gosu $USER "$@"

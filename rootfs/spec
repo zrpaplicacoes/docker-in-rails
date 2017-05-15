@@ -1,9 +1,9 @@
-#!/usr/bin/env ruby
+#!/usr/local/bin/ruby
 # frozen_string_literal: true
 
 require 'colorize'
 
-puts "[INFO] Running application quality approvement...".colorize(:green)
+puts ":::: Running application quality approvement...".colorize(:green)
 
 if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   echo "Testing application security..."
@@ -16,6 +16,6 @@ if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   puts "Finished quality approvement...".colorize(:green)
   0
 else
-  echo "Environment error... RAILS_ENV should be test, currently is #{ENV['RAILS_ENV'] || 'empty'}"
+  echo ":::: Environment error... RAILS_ENV should be test, currently is #{ENV['RAILS_ENV'] || 'empty'}"
   1
 end
