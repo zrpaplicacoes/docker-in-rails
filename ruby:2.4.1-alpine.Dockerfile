@@ -30,5 +30,5 @@ RUN mkdir /srv/app; \
     mkdir /srv/bin;
 
 VOLUME /srv/app
-ENTRYPOINT ["docker_entrypoint"]
+ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]
 CMD ["/bin/ash"]

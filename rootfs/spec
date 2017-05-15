@@ -1,4 +1,4 @@
-#!/usr/bin/env ash
+#!/bin/ash
 echo "Running application quality approvement..."
 
 set -e

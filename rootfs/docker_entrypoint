@@ -1,10 +1,10 @@
-#!/usr/bin/env ash
+#!/bin/ash
 
 set -e
 
 # Load Environment
 echo "[INFO] Loading environment..."
-eval "$(load_env)"
+eval "$(/usr/local/bin/load_env)"
 echo "[INFO] Environment loaded!"
 
 # Export default variables
