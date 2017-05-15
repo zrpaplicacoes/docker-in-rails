@@ -14,10 +14,23 @@ export APP_SETUP_LOCK="$APP_TEMP_PATH/setup.lock"
 export APP_SETUP_WAIT="2"
 
 # Functions
-gems_up_to_date() { bundle check 1> /dev/null; }
 lock_setup() { mkdir -p $APP_TEMP_PATH && touch $APP_SETUP_LOCK; }
 unlock_setup() { rm -rf $APP_SETUP_LOCK; }
 wait_setup() { echo "Waiting for app setup to finish..."; sleep $APP_SETUP_WAIT; }
+gems_up_to_date() { bundle check 1> /dev/null; }
+
+configure_user() {
+  if [ -z "$USER" -a ! "$USER" = "root" ]; then
+    export UID=${USER_ID:-9001}
+    export USER=${USER:-user}
+    export HOME=/home/$USER
+    
+    echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
+    adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
+    # change all application files ownership to current user
+    chown $USER:$USER /srv/app/* -R 2>/dev/null
+  fi
+}
 
 if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
   export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
@@ -48,21 +61,9 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
 
   unlock_setup
 
-  if [ "$1" = "bundle" -a "$2" = "exec" -a "$3" = "rails" -o "$3" = "shoryuken" -o "$3" = "sidekiq"\
-       -o "$3" = "puma" -o "$3" = "guard" -o "$3" = "spec" -o "$1" = "rails" -o "$1" = "puma" -o \
-       "$1" = "sidekiq" -o "$1" = "shoryuken" -o "$1" = "guard" -o "$1" = "rspec"
-     ]
-  then
-    rm -rf "${APP_TEMP_PATH}/pids/server.pid";
-  fi
-  
-  # Configure user
-  export UID=${USER_ID:-9001}
-  export USER=${USER:-user}
-  export HOME=/home/$USER
+  rm -rf "${APP_TEMP_PATH}/pids/server.pid" 2>/dev/null
 
-  echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
-  adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
+  # configure_user
 
   # 10: Execute the given or default command in the $USER namespace:
   echo "[INFO] Executing the given command: '$@'"
@@ -76,16 +77,12 @@ if [ "$RAILS_ENV" = "production" ]; then
   exec "$@"
 fi
 
-if [ "$RAILS_ENV" != 'production' -a "$RAILS_ENV" != 'test' -a "$RAILS_ENV" != "development" ]; then
+if [ -z $RAILS_ENV ]
+then
   echo "[WARN] Booting application on unknow mode..."
 
   # Configure user
-  export UID=${USER_ID:-9001}
-  export USER=${USER:-user}
-  export HOME=/home/$USER
-
-  echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
-  adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
+  # configure_user
 
   # 10: Execute the given or default command in the $USER namespace:
   echo "[INFO] Executing the given command: '$@'"

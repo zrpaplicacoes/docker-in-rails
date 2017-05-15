@@ -3,7 +3,7 @@ echo "Running application quality approvement..."
 
 set -e
 
-if [ "$RAILS_ENV" != "test" ]; then
+if [ ! "$RAILS_ENV" = "test" ]; then
   echo "Environment error... RAILS_ENV should be test, currently is $RAILS_ENV"
   exit 1
 fi

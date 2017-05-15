@@ -1,27 +1,29 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'byebug'
+
 IMAGE = 'zrpaplicacoes/docker-in-rails'
 
 require 'optparse'
 require 'ostruct'
 
 # Parse user params
-options = {}
+config = {}
 
 OptionParser.new do |opt|
-  opt.on('-r', '--ruby RUBY_VERSION', 'Ruby Version') { |o| options[:ruby_version] = o }
-  opt.on('-t', '--tag TAG', 'Tag') { |o| options[:tag] = o }
+  opt.on('-r', '--ruby RUBY_VERSION', 'Ruby Version') { |o| config[:ruby_version] = o }
+  opt.on('-t', '--tag TAG', 'Tag') { |o| config[:tag] = o }
 end.parse!
 
-config = {}
 config[:tag] ||= 'nightly'
 config[:ruby_version] ||= '2.4.1'
-config[:baseimage] ||= "ruby:#{config[:ruby_version]}-alpine"
+config[:tagname] ||= "#{IMAGE}/#{config[:ruby_version]}:#{config[:tag]}"
+config[:dockerfile] ||= "ruby:#{config[:ruby_version]}-alpine.Dockerfile"
 
 # Build the image
-puts "Building #{IMAGE}:#{config[:tag]} image..."
+puts "Building #{config[:tagname]} image..."
 
 system('docker', 'build',
-       '-f', "#{config[:baseimage]}.Dockerfile",
-       '-t', "#{IMAGE}/#{config[:ruby_version]}:#{config[:tag]}", '.')
+       '-f', config[:dockerfile],
+       '-t', config[:tagname], '.')

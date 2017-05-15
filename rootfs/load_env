@@ -10,30 +10,31 @@ end
 
 if File.exist?('.env') || File.exist?('.env.sample') && ENV['RAILS_ENV'] != 'production'
   filename = File.exist?('.env') ? '.env' : '.env.sample'
+  puts "[INFO] Loading dev/test environment using #{filename}...".colorize(:green)
   puts parse(File.read(filename))
 elsif ENV['RAILS_ENV'] == 'production'
   puts '[WARN] Loading production environment...'.colorize(:red)
-  # require 'aws-sdk'
-  # 
-  # s3_client = Aws::S3::Client.new(region: 'us-east-1')
-  # kms_client = Aws::KMS::Client.new(region: 'us-east-1')
-  # 
-  # # retrieve cmk key id
-  # aliases = kms_client.list_aliases.aliases
-  # key = aliases.find { |alias_struct| alias_struct.alias_name == 'alias/unidas-env' }
-  # key_id = key.target_key_id
-  # 
-  # # encryption client
-  # s3_encryption_client = Aws::S3::Encryption::Client.new(
-  #   client: s3_client,
-  #   kms_key_id: key_id,
-  #   kms_client: kms_client
-  # )
-  # 
-  # # retrieve and decrypt .env from s3
-  # response = s3_encryption_client.get_object(
-  #   bucket: 'unidas-secrets',
-  #   key: ".env.admin.#{ENV['RAILS_ENV']}"
-  # )
-  # puts parse(response.body.read)
+  exit(1) unless ENV['ENVFILE']
+  
+  require 'aws-sdk'
+    
+  default_region = ENV['ENVFILE_REGION'] || 'us-east-1'
+
+  s3 = Aws::S3::Client.new(region: default_region)
+  kms = Aws::KMS::Client.new(region: default_region)
+  
+  key = kms.list_aliases.aliases.find do |alias_struct|
+    alias_struct.alias_name == "alias/#{ENV['KMS_ALIAS']}"
+  end
+  
+  # encryption client
+  s3_enc_client = Aws::S3::Encryption::Client.new(
+    client: s3,
+    kms_key_id: key.target_key_id,
+    kms_client: kms_client
+  )
+  
+  # retrieve and decrypt .env from s3
+  response = s3_enc_client.get_object(bucket: ENV['SECRETS_BUCKET'], key: ENV['ENVFILE'])
+  puts parse(response.body.read)
 end

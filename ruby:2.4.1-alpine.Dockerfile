@@ -1,7 +1,7 @@
 FROM ruby:2.4.1-alpine
 MAINTAINER ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>
 
-ENV RUNTIME_PACKAGES="alpine-sdk nodejs" \
+ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     APP_PATH=/srv/app \
     BUNDLE_GEMFILE=/srv/app/Gemfile \
