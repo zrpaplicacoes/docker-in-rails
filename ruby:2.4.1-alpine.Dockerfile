@@ -4,8 +4,6 @@ MAINTAINER ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     APP_PATH=/srv/app \
-    BUNDLE_GEMFILE=/srv/app/Gemfile \
-    BUNDLE_PATH=/srv/bin/app/bundle \
     PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
@@ -22,6 +20,8 @@ RUN set -e; \
   	chmod +x /usr/local/bin/gosu; \
   	gosu nobody true; \
   	apk del .gosu-deps
+
+RUN gem install colorize --no-rdoc --no-ri
 
 WORKDIR /
 COPY rootfs/* /usr/local/bin/

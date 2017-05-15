@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'rubygems'
-require 'bundler'
-require 'pg'
-require 'rake'
-require 'active_record'
+Bundler.require(:default)
 require 'colorize'
 
 include ActiveRecord::Tasks

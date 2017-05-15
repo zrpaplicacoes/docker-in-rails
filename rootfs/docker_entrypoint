@@ -12,9 +12,6 @@ export APP_PATH='/srv/app'
 export APP_TEMP_PATH="$APP_PATH/tmp"
 export APP_SETUP_LOCK="$APP_TEMP_PATH/setup.lock"
 export APP_SETUP_WAIT="2"
-export BUNDLE_GEMFILE=/srv/app/Gemfile
-export BUNDLE_PATH=/srv/bin/app/bundle
-
 
 # Functions
 lock_setup() { mkdir -p $APP_TEMP_PATH && touch $APP_SETUP_LOCK; }
