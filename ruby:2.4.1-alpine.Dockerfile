@@ -3,7 +3,10 @@ MAINTAINER ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>
 
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs" \
     GOSU_VERSION=1.10 \
-    PATH=/usr/local/bin/:$PATH
+    APP_PATH=/srv/app \
+    BUNDLE_GEMFILE=/srv/app/Gemfile \
+    BUNDLE_PATH=/srv/bin/app/bundle \
+    PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES; \
     gem install bundler colorize --no-rdoc --no-ri
@@ -24,5 +27,8 @@ RUN set -e; \
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
 
-ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]
+RUN mkdir /srv/app; \
+    mkdir /srv/bin;
+
+ENTRYPOINT ["docker_entrypoint"]
 CMD ["/bin/ash"]
