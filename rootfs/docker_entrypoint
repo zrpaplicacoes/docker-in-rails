@@ -2,8 +2,12 @@
 
 set -e
 
+cat /usr/local/bin/logo
+
 # Load Environment
-load_env
+echo "[INFO] Loading environment..."
+eval "$(load_env)"
+echo "[INFO] Environment loaded!"
 
 # Export default variables
 export APP_PATH='/srv/app'
@@ -19,15 +23,17 @@ gems_up_to_date() { bundle check 1> /dev/null; }
 
 configure_user() {
   set -e
-  if [ -z "$USER" -a ! "$USER" = "root" ]; then
-    export UID=${USER_ID:-9001}
-    export USER=${USER:-user}
-    export HOME=/home/$USER
-    
+  export UID=${USER_ID:-9001}
+  export USER=${USER:-app}
+  export HOME=/home/$USER
+  
+  if [ ! "$USER" = "root" ]; then
     echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
     adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
     # change all application files ownership to current user
-    # chown $USER:$USER $APP_PATH/* -R 2>/dev/null
+    if [ -d "$APP_PATH" ]; then
+      chown $USER:$USER $APP_PATH -R
+    fi
   fi
 }
 
@@ -75,11 +81,6 @@ then
 fi
 
 # calls command
-if [ -z $USER ]; then
-  configure_user
-  echo "[INFO] Executing the given command: '$@'"
-  exec /usr/local/bin/gosu $USER "$@"
-else
-  echo "[INFO] Executing the given command: '$@'"
-  exec "$@"
-fi
+configure_user
+echo "[INFO] Executing the given command: '$@'"
+exec /usr/local/bin/gosu $USER "$@"

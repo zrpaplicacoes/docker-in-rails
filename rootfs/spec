@@ -5,8 +5,7 @@ require 'colorize'
 
 puts "[INFO] Running application quality approvement...".colorize(:green)
 
-
-if ENV['RAILS_ENV'].present? && ENV['RAILS_ENV'] == 'test'
+if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   echo "Testing application security..."
   exec('brakeman', '-z', '-A', '-q')
   puts "Testing spec/ folder...".colorize(:green)
@@ -15,8 +14,7 @@ if ENV['RAILS_ENV'].present? && ENV['RAILS_ENV'] == 'test'
   exec('rspec', 'spec')
   
   puts "Finished quality approvement...".colorize(:green)
-  
-  exit 0
+  0
 else
   echo "Environment error... RAILS_ENV should be test, currently is #{ENV['RAILS_ENV'] || 'empty'}"
   1

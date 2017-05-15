@@ -1,12 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'byebug'
-
 IMAGE = 'zrpaplicacoes/docker-in-rails'
 
 require 'optparse'
-require 'ostruct'
 
 # Parse user params
 config = {}

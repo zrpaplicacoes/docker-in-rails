@@ -1,5 +1,9 @@
 FROM ruby:2.4.1-alpine
+
 MAINTAINER ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>
+
+LABEL vendor="ZRP Aplicações Informáticas LTDA - ME"
+LABEL license="GPLv3"
 
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
@@ -25,9 +29,6 @@ RUN gem install bundler colorize --no-rdoc --no-ri
 
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
-
-RUN mkdir /srv/app; \
-    mkdir /srv/bin;
 
 VOLUME /srv/app
 ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]

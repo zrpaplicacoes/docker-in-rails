@@ -12,11 +12,8 @@ end
 
 if File.exist?('.env') || File.exist?('.env.sample') && ENV['RAILS_ENV'] != 'production'
   filename = File.exist?('.env') ? '.env' : '.env.sample'
-  puts "[INFO] Loading dev/test environment using #{filename}...".colorize(:green)
-  system('eval', parse(File.read(filename)))
-  puts "[INFO] Environment loaded".colorize(:green)
+  puts parse(File.read(filename))
 elsif ENV['RAILS_ENV'] == 'production'
-  puts '[WARN] Loading production environment...'.colorize(:red)
   exit(1) unless ENV['ENVFILE']
   
   require 'aws-sdk'
@@ -39,6 +36,5 @@ elsif ENV['RAILS_ENV'] == 'production'
   
   # retrieve and decrypt .env from s3
   response = s3_enc_client.get_object(bucket: ENV['SECRETS_BUCKET'], key: ENV['ENVFILE'])
-  system('eval', parse(response.body.read))
-  puts "[INFO] Environment loaded".colorize(:green)
+  puts parse(response.body.read)
 end
