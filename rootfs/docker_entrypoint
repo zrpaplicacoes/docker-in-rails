@@ -2,7 +2,7 @@
 
 set -e
 
-cat /usr/local/bin/logo
+source /usr/local/bin/logo
 
 # Load Environment
 echo "[INFO] Loading environment..."
@@ -48,27 +48,29 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
 
   if [ -z "$1" ]; then set -- /bin/ash "$@"; fi
 
-  while [ -f $APP_SETUP_LOCK ]; do wait_setup; done
-
-  lock_setup
-
-  echo "[INFO] Checking system bundle"
-  if ! gems_up_to_date; then
-    echo "[INFO] Installing/Updating Rails dependencies"
-    bundle install -j4 --retry 3
-    echo "[INFO] Gems updated"
-  else
-    echo "[INFO] Gems up to date"
+  if [ -d "$APP_PATH" ]; then
+    while [ -f $APP_SETUP_LOCK ]; do wait_setup; done
+    
+    lock_setup
+    
+    echo "[INFO] Checking system bundle"
+    if ! gems_up_to_date; then
+      echo "[INFO] Installing/Updating Rails dependencies"
+      bundle install -j4 --retry 3
+      echo "[INFO] Gems updated"
+    else
+      echo "[INFO] Gems up to date"
+    fi
+    
+    echo "[INFO] Checking database consistency against current schema..."
+    if [ -z $DATABASE_ADAPTER ]; then
+      bundle exec setup_pg
+    fi
+    
+    unlock_setup
+    
+    rm -rf "${APP_TEMP_PATH}/pids/server.pid" 2>/dev/null
   fi
-
-  echo "[INFO] Checking database consistency against current schema..."
-  if [ -z $DATABASE_ADAPTER ]; then
-    bundle exec setup_pg
-  fi
-
-  unlock_setup
-
-  rm -rf "${APP_TEMP_PATH}/pids/server.pid" 2>/dev/null
 fi
 
 if [ "$RAILS_ENV" = "production" ]; then

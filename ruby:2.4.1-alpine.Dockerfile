@@ -8,7 +8,8 @@ LABEL license="GPLv3"
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     APP_PATH=/srv/app \
-    PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH
+    PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH \
+    RUBY_VERSION=2.4.1
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
 
