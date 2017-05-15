@@ -1,11 +1,12 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'rubygems'
 require 'bundler'
+require 'pg'
+require 'rake'
+require 'active_record'
 require 'colorize'
-Bundler.require(:default)
-
-include ActiveRecord::Tasks
 
 DatabaseTasks.root = File.expand_path('/srv/app')
 DatabaseTasks.db_dir = File.join DatabaseTasks.root, 'db'
