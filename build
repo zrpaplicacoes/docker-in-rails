@@ -24,4 +24,4 @@ puts "Building #{IMAGE}:#{config[:tag]} image..."
 
 system('docker', 'build',
        '-f', "#{config[:baseimage]}.Dockerfile",
-       '-t', "#{IMAGE}:#{config[:ruby_version]}-#{config[:tag]}", '.')
+       '-t', "#{IMAGE}/#{config[:ruby_version]}:#{config[:tag]}", '.')
