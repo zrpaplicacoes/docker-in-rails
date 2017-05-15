@@ -14,6 +14,7 @@ if File.exist?('.env') || File.exist?('.env.sample') && ENV['RAILS_ENV'] != 'pro
   filename = File.exist?('.env') ? '.env' : '.env.sample'
   puts parse(File.read(filename))
 elsif ENV['RAILS_ENV'] == 'production'
+  exit(0) if ENV['DISABLE_AWS_ENV_LOAD']
   exit(1) unless ENV['ENVFILE']
   
   require 'aws-sdk'
