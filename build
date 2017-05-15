@@ -18,7 +18,7 @@ end.parse!
 
 config[:tag] ||= 'nightly'
 config[:ruby_version] ||= '2.4.1'
-config[:tagname] ||= "#{IMAGE}/#{config[:ruby_version]}:#{config[:tag]}"
+config[:tagname] ||= "#{IMAGE}:#{config[:ruby_version]}-#{config[:tag]}"
 config[:dockerfile] ||= "ruby:#{config[:ruby_version]}-alpine.Dockerfile"
 
 # Build the image
