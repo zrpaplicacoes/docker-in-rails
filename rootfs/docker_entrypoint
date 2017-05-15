@@ -20,6 +20,7 @@ wait_setup() { echo "Waiting for app setup to finish..."; sleep $APP_SETUP_WAIT;
 gems_up_to_date() { bundle check 1> /dev/null; }
 
 configure_user() {
+  set -e
   if [ -z "$USER" -a ! "$USER" = "root" ]; then
     export UID=${USER_ID:-9001}
     export USER=${USER:-user}
@@ -28,7 +29,7 @@ configure_user() {
     echo "[INFO] Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
     adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
     # change all application files ownership to current user
-    chown $USER:$USER $APP_PATH/* -R 2>/dev/null
+    # chown $USER:$USER $APP_PATH/* -R 2>/dev/null
   fi
 }
 
@@ -62,29 +63,23 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
   unlock_setup
 
   rm -rf "${APP_TEMP_PATH}/pids/server.pid" 2>/dev/null
-
-  # configure_user
-
-  # 10: Execute the given or default command in the $USER namespace:
-  echo "[INFO] Executing the given command: '$@'"
-  exec /usr/local/bin/gosu $USER "$@"
 fi
 
 if [ "$RAILS_ENV" = "production" ]; then
   echo "[WARN] Booting application on production mode..."
-
-  echo "[INFO] Executing the given command: '$@'"
-  exec "$@"
 fi
 
 if [ -z $RAILS_ENV ]
 then
   echo "[WARN] Booting application on unknow mode..."
+fi
 
-  # Configure user
-  # configure_user
-
-  # 10: Execute the given or default command in the $USER namespace:
+# calls command
+if [ -z $USER ]; then
+  configure_user
   echo "[INFO] Executing the given command: '$@'"
   exec /usr/local/bin/gosu $USER "$@"
+else
+  echo "[INFO] Executing the given command: '$@'"
+  exec "$@"
 fi

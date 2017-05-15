@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-Bundler.require(:default)
+require 'bundler'
 require 'colorize'
+Bundler.require(:default)
 
 include ActiveRecord::Tasks
 

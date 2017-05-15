@@ -21,7 +21,7 @@ RUN set -e; \
   	gosu nobody true; \
   	apk del .gosu-deps
 
-RUN gem install colorize --no-rdoc --no-ri
+RUN gem install bundler colorize --no-rdoc --no-ri
 
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
