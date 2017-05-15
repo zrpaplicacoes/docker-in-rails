@@ -8,8 +8,7 @@ ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     BUNDLE_PATH=/srv/bin/app/bundle \
     PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH
 
-RUN apk add --no-cache --update $RUNTIME_PACKAGES; \
-    gem install bundler colorize --no-rdoc --no-ri
+RUN apk add --no-cache --update $RUNTIME_PACKAGES;
 
 RUN set -e; \
     apk add --no-cache --virtual .gosu-deps dpkg gnupg openssl; \
@@ -30,5 +29,6 @@ COPY rootfs/* /usr/local/bin/
 RUN mkdir /srv/app; \
     mkdir /srv/bin;
 
+VOLUME /srv/app
 ENTRYPOINT ["docker_entrypoint"]
 CMD ["/bin/ash"]
