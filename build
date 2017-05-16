@@ -37,6 +37,7 @@ config[:tag] ||= 'nightly'
 
 # Build the image
 if config[:all]
+  puts "WARN - Ignoring provided ruby version #{config[:ruby_version]}".colorize(:red) if config[:ruby_version]
   VERSIONS.each do |ruby_version|
     build(ruby_version, config[:tag])
     puts "\n" unless ruby_version == VERSIONS.last
