@@ -1,26 +1,47 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-IMAGE = 'zrpaplicacoes/docker-in-rails'
-
 require 'optparse'
+require 'colorize'
+
+IMAGE = 'zrpaplicacoes/docker-in-rails'
+VERSIONS = ['2.4.1', '2.2.7']
+
+def dockerfile(version)
+  "ruby:#{version}-alpine.Dockerfile"
+end
+
+def tag(version, user_tag)
+  "#{IMAGE}:#{version}-#{user_tag}"
+end
+
+def build(ruby_version, tag)
+  puts "Building #{tag(ruby_version, tag)} image..."
+  system('docker', 'build', '-q',
+         '-f', dockerfile(ruby_version),
+         '-t', tag(ruby_version, tag), '.')
+         
+  puts "Successfully built #{tag(ruby_version, tag)}".colorize(:green)
+end
 
 # Parse user params
 config = {}
 
 OptionParser.new do |opt|
+  opt.on('-a', '--all', 'Build all images') { |v| config[:all] = v }
   opt.on('-r', '--ruby RUBY_VERSION', 'Ruby Version') { |o| config[:ruby_version] = o }
   opt.on('-t', '--tag TAG', 'Tag') { |o| config[:tag] = o }
 end.parse!
 
 config[:tag] ||= 'nightly'
-config[:ruby_version] ||= '2.4.1'
-config[:tagname] ||= "#{IMAGE}:#{config[:ruby_version]}-#{config[:tag]}"
-config[:dockerfile] ||= "ruby:#{config[:ruby_version]}-alpine.Dockerfile"
 
 # Build the image
-puts "Building #{config[:tagname]} image..."
-
-system('docker', 'build',
-       '-f', config[:dockerfile],
-       '-t', config[:tagname], '.')
+if config[:all]
+  VERSIONS.each do |ruby_version|
+    build(ruby_version, config[:tag])
+    puts "\n" unless ruby_version == VERSIONS.last
+  end
+else
+  config[:ruby_version] ||= '2.4.1'
+  build(config[:ruby_version], config[:tag])
+end
