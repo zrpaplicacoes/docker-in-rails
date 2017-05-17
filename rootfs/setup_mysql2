@@ -8,38 +8,62 @@ require 'rake'
 require 'active_record'
 require 'colorize'
 
-include ActiveRecord::Tasks
+PendingMigrationsError = Class.new(StandardError)
+MissingDatabaseError = Class.new(StandardError)
 
-DatabaseTasks.root = File.expand_path('/srv/app')
-DatabaseTasks.db_dir = File.join DatabaseTasks.root, 'db'
-DatabaseTasks.env = ENV.fetch 'ENV', ENV.fetch('RAILS_ENV', 'development')
+missing_db_errors = [Mysql2::Error]
+missing_db_errors << ActiveRecord::NoDatabaseError if defined?(ActiveRecord::NoDatabaseError)
+
+def check_pending!
+  if defined?(ActiveRecord::Migration.check_pending!)
+    begin
+      ActiveRecord::Migration.check_pending!
+    rescue
+      raise PendingMigrationsError
+    end
+  else
+    migration_status = `bundle exec rake db:migrate:status`
+    raise PendingMigrationsError if migration_status =~ /down\s*\d*/i
+  end
+end
+
+def setup_database
+  puts ':::: Setuping database...'
+  response = `bundle exec rake db:setup`
+  unless response =~ /pending migrations/
+    puts ':::: Database setup finished...'.colorize(:green)
+  end
+end
+
+def migrate
+  puts ':::: Migrations are pending, running latest migrations'
+  `bundle exec rake db:migrate`
+  puts ':::: Schema loaded correctly...'.colorize(:green)
+  0
+end
 
 exit begin
   connection_tries ||= 3
-  ActiveRecord::Base.establish_connection
-  ActiveRecord::Migration.check_pending!
+  begin
+    puts ":::: Trying to establish connection with database..."
+    ActiveRecord::Base.establish_connection
+    ActiveRecord::Base.connection
+    puts ":::: Database is up and reachable".colorize(:green)
+  rescue *missing_db_errors => errors
+    puts ':::: Database not found...'.colorize(:red)
+    raise MissingDatabaseError
+  end
+  check_pending!
   0
-rescue PG::ConnectionBad
+rescue PendingMigrationsError
+  migrate
+rescue MissingDatabaseError
   unless (connection_tries -= 1).zero?
-    puts ":::: Retrying DB connection #{connection_tries} more times...".colorize(:red)
+    setup_database
     sleep ENV.fetch('APP_SETUP_WAIT', '5').to_i
     retry
   end
   1
-
-rescue ActiveRecord::PendingMigrationError
-  puts ':::: Migrations are pending, running latest migrations'.colorize(:yellow)
-  return 1 unless exec('rake db:migrate')
-  0
-rescue ActiveRecord::NoDatabaseError
-  puts ':::: Database not found...'.colorize(:red)
-  return 1 unless DatabaseTasks.create_current
-  if DatabaseTasks.load_schema_current
-    puts ':::: Schema loaded correctly...'.colorize(:green)
-  else
-    puts ':::: Schema could not be loaded...'.colorize(:red)
-  end
-  retry
 ensure
   ActiveRecord::Base.clear_all_connections!
 end

@@ -27,8 +27,9 @@ During initialization you can pass some environment variables to change entrypoi
 *   SKIP_BUNDLE_INSTALL: does not install missing gems on initialization
 *   SKIP_DB_SETUP: does not try to configure a database system
 *   DATABASE_ADAPTER: specifies the database setup used by the entrypoint. Currently we're supporting both (mysql2/postgresql), by default, it uses postgresql.
-*   DROP_DATABASE_IF_TEST: always drop database if RAILS_ENV equals test. 
+*   DROP_DATABASE_IF_TEST: always drop database if RAILS_ENV equals test.
 *   USER_ID: specifies the UID attached to the app user of the container, which is used by default through gosu.
+*   RUN_AS_ROOT: disables APP user an runs docker in default mode (as root). Please beware that running as root has side effects, including impossibility of booting some services, overwriting configuration files and scripts, and writing new files in a volume as root.
 
 # Versions
 
