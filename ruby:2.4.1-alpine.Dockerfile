@@ -8,8 +8,6 @@ LABEL license="GPLv3"
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     APP_PATH=/srv/app \
-    BUNDLE_PATH=/srv/bin/app/bundle \
-    BUNDLE_GEMFILE=/srv/app/Gemfile \
     PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH \
     RUBY_VERSION=2.4.1
 
