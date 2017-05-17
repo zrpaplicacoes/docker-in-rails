@@ -1,0 +1,45 @@
+#!/usr/local/bin/ruby
+# frozen_string_literal: true
+
+require 'rubygems'
+require 'bundler'
+require 'mysql2'
+require 'rake'
+require 'active_record'
+require 'colorize'
+
+include ActiveRecord::Tasks
+
+DatabaseTasks.root = File.expand_path('/srv/app')
+DatabaseTasks.db_dir = File.join DatabaseTasks.root, 'db'
+DatabaseTasks.env = ENV.fetch 'ENV', ENV.fetch('RAILS_ENV', 'development')
+
+exit begin
+  connection_tries ||= 3
+  ActiveRecord::Base.establish_connection
+  ActiveRecord::Migration.check_pending!
+  0
+rescue PG::ConnectionBad
+  unless (connection_tries -= 1).zero?
+    puts ":::: Retrying DB connection #{connection_tries} more times...".colorize(:red)
+    sleep ENV.fetch('APP_SETUP_WAIT', '5').to_i
+    retry
+  end
+  1
+
+rescue ActiveRecord::PendingMigrationError
+  puts ':::: Migrations are pending, running latest migrations'.colorize(:yellow)
+  return 1 unless exec('rake db:migrate')
+  0
+rescue ActiveRecord::NoDatabaseError
+  puts ':::: Database not found...'.colorize(:red)
+  return 1 unless DatabaseTasks.create_current
+  if DatabaseTasks.load_schema_current
+    puts ':::: Schema loaded correctly...'.colorize(:green)
+  else
+    puts ':::: Schema could not be loaded...'.colorize(:red)
+  end
+  retry
+ensure
+  ActiveRecord::Base.clear_all_connections!
+end

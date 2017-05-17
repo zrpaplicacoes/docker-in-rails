@@ -5,6 +5,7 @@ require 'optparse'
 require 'colorize'
 
 IMAGE = 'zrpaplicacoes/docker-in-rails'
+LATEST_VERSION = '2.4.1'
 VERSIONS = ['2.4.1', '2.2.7', '2.1.10']
 
 def dockerfile(version)
@@ -22,6 +23,10 @@ def build(ruby_version, tag)
          '-t', tag(ruby_version, tag), '.')
          
   puts "Successfully built #{tag(ruby_version, tag)}".colorize(:green)
+
+  if ruby_version == LATEST_VERSION
+    system('docker', 'tag', tag(ruby_version, tag), "#{IMAGE}:latest")
+  end
 end
 
 # Parse user params
