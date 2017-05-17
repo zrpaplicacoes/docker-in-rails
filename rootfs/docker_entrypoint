@@ -32,6 +32,8 @@ configure_user() {
 
 # Install script dependencies
 if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
+  export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+
   echo -e "${BGreen}:::: Booting application on development/test mode...${Color_Off}"
   echo ":::: RACK_ENV=$RACK_ENV and RAILS_ENV=$RAILS_ENV"
   echo ":::: Database is set as $DATABASE_URL"
@@ -59,17 +61,16 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
 
     if [ -z $SKIP_DB_SETUP ]; then
       echo ":::: Checking database consistency against current schema..."
-      export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
       
       if [ -z $DROP_DATABASE_IF_TEST -a "$RAILS_ENV" = "test" ]; then
-        rake db:drop
+        bundle exec rake db:drop
       fi
       
       if [ -z $DATABASE_ADAPTER ]; then
         setup_pg
       elif [ "$DATABASE_ADAPTER" = "mysql2" ]; then
         setup_mysql2
-      elif [ "$DATABASE_ADAPTER" = "postgresql"]; then
+      elif [ "$DATABASE_ADAPTER" = "postgresql" ]; then
         setup_pg
       fi
     fi
