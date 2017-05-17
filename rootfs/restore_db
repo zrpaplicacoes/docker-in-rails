@@ -4,6 +4,8 @@
 require 'optparse'
 require 'colorize'
 
+raise "not implemented"
+
 unless ENV['DATABASE_URL']
   puts "Database not configured!".colorize(:red)
   exit(1)

@@ -6,7 +6,6 @@ require 'bundler'
 require 'pg'
 require 'rake'
 require 'active_record'
-require 'colorize'
 
 include ActiveRecord::Tasks
 
@@ -21,23 +20,23 @@ exit begin
   0
 rescue PG::ConnectionBad
   unless (connection_tries -= 1).zero?
-    puts ":::: Retrying DB connection #{connection_tries} more times...".colorize(:red)
+    puts "\033[0;31m:::: Retrying DB connection #{connection_tries} more times...\033[0m"
     sleep ENV.fetch('APP_SETUP_WAIT', '5').to_i
     retry
   end
   1
 
 rescue ActiveRecord::PendingMigrationError
-  puts ':::: Migrations are pending, running latest migrations'.colorize(:yellow)
+  puts "\033[0;33m:::: Migrations are pending, running latest migrations\033[0m"
   return 1 unless exec('rake db:migrate')
   0
 rescue ActiveRecord::NoDatabaseError
-  puts ':::: Database not found...'.colorize(:red)
+  puts "\033[0;31m:::: Database not found...\033[0m"
   return 1 unless DatabaseTasks.create_current
   if DatabaseTasks.load_schema_current
-    puts ':::: Schema loaded correctly...'.colorize(:green)
+    puts "\033[0;32m:::: Schema loaded correctly...\033[0m"
   else
-    puts ':::: Schema could not be loaded...'.colorize(:red)
+    puts "\033[0;31m:::: Schema could not be loaded...\033[0m"
   end
   retry
 ensure

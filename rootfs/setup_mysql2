@@ -6,7 +6,6 @@ require 'bundler'
 require 'mysql2'
 require 'rake'
 require 'active_record'
-require 'colorize'
 
 PendingMigrationsError = Class.new(StandardError)
 MissingDatabaseError = Class.new(StandardError)
@@ -31,14 +30,14 @@ def setup_database
   puts ':::: Setuping database...'
   response = `bundle exec rake db:setup`
   unless response =~ /pending migrations/
-    puts ':::: Database setup finished...'.colorize(:green)
+    puts "\033[0;32m:::: Database setup finished...\033[0m"
   end
 end
 
 def migrate
   puts ':::: Migrations are pending, running latest migrations'
   `bundle exec rake db:migrate`
-  puts ':::: Schema loaded correctly...'.colorize(:green)
+  puts "\033[0;32m:::: Schema loaded correctly...\033[0m"
   0
 end
 
@@ -48,9 +47,9 @@ exit begin
     puts ":::: Trying to establish connection with database..."
     ActiveRecord::Base.establish_connection
     ActiveRecord::Base.connection
-    puts ":::: Database is up and reachable".colorize(:green)
+    puts "\033[0;32m:::: Database is up and reachable\033[0m"
   rescue *missing_db_errors => errors
-    puts ':::: Database not found...'.colorize(:red)
+    puts "\033[0;31m:::: Database not found...\033[0m"
     raise MissingDatabaseError
   end
   check_pending!

@@ -27,7 +27,7 @@ configure_user() {
   export UID=${USER_ID:-1000}
 
   echo ":::: Starting with (UID: $UID, USER: $USER)"
-  adduser -u $UID -s /bin/ash -H -D $USER || echo "" > /dev/null
+  adduser -u $UID -s /bin/ash -h /home/$USER -D $USER || echo "" > /dev/null
 }
 
 # Install script dependencies
@@ -63,7 +63,7 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
       echo ":::: Checking database consistency against current schema..."
       
       if [ -z $DROP_DATABASE_IF_TEST -a "$RAILS_ENV" = "test" ]; then
-        bundle exec rake db:drop
+        rake db:drop
       fi
       
       if [ -z $DATABASE_ADAPTER ]; then

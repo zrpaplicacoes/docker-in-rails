@@ -1,19 +1,17 @@
 #!/usr/local/bin/ruby
 # frozen_string_literal: true
 
-require 'colorize'
-
-puts ":::: Running application quality approvement...".colorize(:green)
+puts "\033[0;32m:::: Running application quality approvement...\033[0m"
 
 if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   echo "Testing application security..."
   exec('brakeman', '-z', '-A', '-q')
-  puts "Testing spec/ folder...".colorize(:green)
+  puts "\033[0;32mTesting spec/ folder...\033[0m"
   
   exec('check_or_setup_db')
   exec('rspec', 'spec')
   
-  puts "Finished quality approvement...".colorize(:green)
+  puts "\033[0;32mFinished quality approvement...\033[0m"
   0
 else
   echo ":::: Environment error... RAILS_ENV should be test, currently is #{ENV['RAILS_ENV'] || 'empty'}"
