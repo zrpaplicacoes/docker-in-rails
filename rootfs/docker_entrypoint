@@ -45,7 +45,7 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
     
     lock_setup
       
-    if [ -z $SKIP_BUNDLE_INSTALL ]
+    if [ -z $SKIP_BUNDLE_INSTALL ]; then
       echo ":::: Checking system bundle"
       if ! gems_up_to_date; then
         echo ":::: Installing/Updating Rails dependencies"
@@ -90,6 +90,11 @@ then
 fi
 
 # calls command
-configure_user
-echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
-/usr/local/bin/gosu $USER "$@"
+if [ -z $RUN_AS_ROOT ]; then
+  configure_user
+  echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
+  /usr/local/bin/gosu $USER "$@"
+else
+  echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
+  exec "$@"
+fi
