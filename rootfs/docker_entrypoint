@@ -40,7 +40,7 @@ configure_user() {
 }
 
 # Install script dependencies
-gem install bundler colorize --no-rdoc --no-ri --no-user-install
+gem install colorize --no-rdoc --no-ri --no-user-install
 
 if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
   export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
