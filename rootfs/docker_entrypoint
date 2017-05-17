@@ -31,6 +31,8 @@ configure_user() {
   if [ ! "$USER" = "root" ]; then
     echo ":::: Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
     adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
+    addgroup $USER root
+    
     # change all application files ownership to current user
     if [ -d "$APP_PATH" ]; then
       chown $USER:$USER $APP_PATH -R
