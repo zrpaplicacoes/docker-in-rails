@@ -24,7 +24,7 @@ wait_setup() { echo -e "${BRed}Waiting for app setup to finish...${Color_Off}"; 
 gems_up_to_date() { bundle check 1> /dev/null; }
 configure_user() {
   set -e
-  export UID=${USER_ID:-9001}
+  export UID=${USER_ID:-1000}
 
   echo ":::: Starting with (UID: $UID, USER: $USER)"
   adduser -u $UID -s /bin/ash -H -D $USER || echo "" > /dev/null
@@ -69,6 +69,8 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
         setup_pg
       elif [ "$DATABASE_ADAPTER" = "mysql2" ]; then
         setup_mysql2
+      elif [ "$DATABASE_ADAPTER" = "postgresql"]; then
+        setup_pg
       fi
     fi
     
