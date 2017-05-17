@@ -21,7 +21,6 @@ lock_setup() { mkdir -p $APP_TEMP_PATH && touch $APP_SETUP_LOCK; }
 unlock_setup() { rm -rf $APP_SETUP_LOCK; }
 wait_setup() { echo -e "${BRed}Waiting for app setup to finish...${Color_Off}"; sleep $APP_SETUP_WAIT; }
 gems_up_to_date() { bundle check 1> /dev/null; }
-
 configure_user() {
   set -e
   export UID=${USER_ID:-9001}
@@ -39,6 +38,9 @@ configure_user() {
     fi
   fi
 }
+
+# Install script dependencies
+gem install bundler colorize --no-rdoc --no-ri --no-user-install
 
 if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
   export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
