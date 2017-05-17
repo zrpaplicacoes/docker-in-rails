@@ -15,6 +15,7 @@ export APP_PATH='/srv/app'
 export APP_TEMP_PATH="$APP_PATH/tmp"
 export APP_SETUP_LOCK="$APP_TEMP_PATH/setup.lock"
 export APP_SETUP_WAIT="2"
+export USER=app
 
 # Functions
 lock_setup() { mkdir -p $APP_TEMP_PATH && touch $APP_SETUP_LOCK; }
@@ -24,27 +25,13 @@ gems_up_to_date() { bundle check 1> /dev/null; }
 configure_user() {
   set -e
   export UID=${USER_ID:-9001}
-  export USER=${USER:-app}
-  export HOME=/home/$USER
-  
-  if [ ! "$USER" = "root" ]; then
-    echo ":::: Starting with (UID: $UID, USER: $USER, HOME: $HOME)"
-    adduser -u $UID -s /bin/ash -h $HOME -D $USER || echo "User already exists..."
-    addgroup $USER root
-    
-    # change all application files ownership to current user
-    if [ -d "$APP_PATH" ]; then
-      chown $USER:$USER $APP_PATH -R
-    fi
-  fi
+
+  echo ":::: Starting with (UID: $UID, USER: $USER)"
+  adduser -u $UID -s /bin/ash -H -D $USER || echo "" > /dev/null
 }
 
 # Install script dependencies
-gem install colorize --no-rdoc --no-ri --no-user-install
-
 if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
-  export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
-  
   echo -e "${BGreen}:::: Booting application on development/test mode...${Color_Off}"
   echo ":::: RACK_ENV=$RACK_ENV and RAILS_ENV=$RAILS_ENV"
   echo ":::: Database is set as $DATABASE_URL"
@@ -57,24 +44,32 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
     while [ -f $APP_SETUP_LOCK ]; do wait_setup; done
     
     lock_setup
-    
-    echo ":::: Checking system bundle"
-    if ! gems_up_to_date; then
-      echo ":::: Installing/Updating Rails dependencies"
-      bundle install
-      echo -e "${BGreen}:::: Successfully updated dependencies${Color_Off}"
-    else
-      echo -e "${BGreen}:::: Dependencies are up to date${Color_Off}"
+      
+    if [ -z $SKIP_BUNDLE_INSTALL ]
+      echo ":::: Checking system bundle"
+      if ! gems_up_to_date; then
+        echo ":::: Installing/Updating Rails dependencies"
+        bundle install
+        echo -e "${BGreen}:::: Successfully updated dependencies${Color_Off}"
+      else
+        echo -e "${BGreen}:::: Dependencies are up to date${Color_Off}"
+      fi
     fi
     
-    echo ":::: Checking database consistency against current schema..."
-    if [ "$RAILS_ENV" = "test" ]; then
-      bundle exec rake db:drop
-    fi
-    if [ -z $DATABASE_ADAPTER ]; then
-      bundle exec setup_pg
-    elif [ "$DATABASE_ADAPTER" = "mysql2" ]; then
-      bundle exec setup_mysql2
+
+    if [ -z $SKIP_DB_SETUP ]; then
+      echo ":::: Checking database consistency against current schema..."
+      export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+      
+      if [ -z $DROP_DATABASE_IF_TEST -a "$RAILS_ENV" = "test" ]; then
+        rake db:drop
+      fi
+      
+      if [ -z $DATABASE_ADAPTER ]; then
+        setup_pg
+      elif [ "$DATABASE_ADAPTER" = "mysql2" ]; then
+        setup_mysql2
+      fi
     fi
     
     unlock_setup
@@ -95,4 +90,4 @@ fi
 # calls command
 configure_user
 echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
-exec /usr/local/bin/gosu $USER "$@"
+/usr/local/bin/gosu $USER "$@"

@@ -8,7 +8,7 @@ LABEL license="GPLv3"
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     APP_PATH=/srv/app \
-    PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH \
+    PATH=/usr/bundle/:/usr/local/bundle/:/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH \
     RUBY_VERSION=2.1.10
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
@@ -25,6 +25,8 @@ RUN set -e; \
   	chmod +x /usr/local/bin/gosu; \
   	gosu nobody true; \
   	apk del .gosu-deps
+
+RUN gem install colorize --no-rdoc --no-ri --install-dir /usr/bundle
 
 WORKDIR /
 COPY rootfs/* /usr/local/bin/

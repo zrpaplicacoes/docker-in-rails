@@ -16,12 +16,15 @@ def tag(version, user_tag)
   "#{IMAGE}:#{version}-#{user_tag}"
 end
 
-def build(ruby_version, tag)
+def build(ruby_version, tag, opts = {})
   puts "Building #{tag(ruby_version, tag)} image..."
-  system('docker', 'build', '-q',
-         '-f', dockerfile(ruby_version),
-         '-t', tag(ruby_version, tag), '.')
-         
+  build_config = ['docker', 'build', opts[:quiet] ? '-q' : '',
+                  '-f', dockerfile(ruby_version),
+                  '-t', tag(ruby_version, tag), '.']
+
+  build_config = build_config.reject(&:empty?)
+  system(*build_config)
+
   puts "Successfully built #{tag(ruby_version, tag)}".colorize(:green)
 
   if ruby_version == LATEST_VERSION
@@ -44,7 +47,7 @@ config[:tag] ||= 'nightly'
 if config[:all]
   puts "WARN - Ignoring provided ruby version #{config[:ruby_version]}".colorize(:red) if config[:ruby_version]
   VERSIONS.each do |ruby_version|
-    build(ruby_version, config[:tag])
+    build(ruby_version, config[:tag], quiet: true)
     puts "\n" unless ruby_version == VERSIONS.last
   end
 else
