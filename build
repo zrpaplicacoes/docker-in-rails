@@ -5,7 +5,7 @@ require 'optparse'
 require 'colorize'
 
 IMAGE = 'zrpaplicacoes/docker-in-rails'
-VERSIONS = ['2.4.1', '2.2.7']
+VERSIONS = ['2.4.1', '2.2.7', '2.1.10']
 
 def dockerfile(version)
   "ruby:#{version}-alpine.Dockerfile"

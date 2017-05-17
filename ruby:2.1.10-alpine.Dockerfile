@@ -1,4 +1,4 @@
-FROM ruby:2.2.7-alpine
+FROM ruby:2.1.10-alpine
 
 MAINTAINER ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>
 
@@ -9,7 +9,7 @@ ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     APP_PATH=/srv/app \
     PATH=/usr/local/bin/:/srv/bin/app:/srv/app/bin/:/srv/app/:$PATH \
-    RUBY_VERSION=2.2.7
+    RUBY_VERSION=2.1.10
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
 
