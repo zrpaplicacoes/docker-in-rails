@@ -28,7 +28,7 @@ services:
 
   base: &base
     hostname: base
-    image: unidas/admin:nightly
+    image: zrpaplicacoes/docker-in-rails:latest
     build:
       context: .
       dockerfile: dev.Dockerfile
@@ -36,7 +36,7 @@ services:
       - .:/srv/app
       - bundler-data:/srv/bin/app/bundle
     environment: &env
-      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/unidas_admin_development
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/docker_in_rails_development
       REDIS_URL: redis://redis.local:6379
       SIDEKIQ_CONCURRENCY: 5
       SIDEKIQ_TIMEOUT: 10
@@ -93,7 +93,7 @@ services:
       - redis:redis.local
     environment:
       <<: *env
-      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/unidas_admin_test
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/docker_in_rails_test
       RACK_ENV: test
       RAILS_ENV: test
     ports: []
@@ -106,7 +106,7 @@ services:
       - redis:redis.local
     environment:
       <<: *env
-      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/unidas_admin_test
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/docker_in_rails_test
       RACK_ENV: test
       RAILS_ENV: test
     ports: []
