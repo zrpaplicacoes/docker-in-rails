@@ -28,7 +28,7 @@ rescue PG::ConnectionBad
 
 rescue ActiveRecord::PendingMigrationError
   puts "\033[0;33m:::: Migrations are pending, running latest migrations\033[0m"
-  return 1 unless exec('rake db:migrate')
+  return 1 unless exec('bundle exec rake db:migrate')
   0
 rescue ActiveRecord::NoDatabaseError
   puts "\033[0;31m:::: Database not found...\033[0m"
