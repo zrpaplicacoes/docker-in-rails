@@ -63,15 +63,15 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
       echo ":::: Checking database consistency against current schema..."
       
       if [ "$RAILS_ENV" = "test" -a -n $DROP_DATABASE_IF_TEST ]; then
-        rake db:drop
+        bundle exec rake db:drop
       fi
       
       if [ -z $DATABASE_ADAPTER ]; then
-        setup_pg
+        bundle exec setup_pg
       elif [ "$DATABASE_ADAPTER" = "mysql2" ]; then
-        setup_mysql2
+        bundle exec setup_mysql2
       elif [ "$DATABASE_ADAPTER" = "postgresql" ]; then
-        setup_pg
+        bundle exec setup_pg
       fi
     fi
     
