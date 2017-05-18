@@ -42,7 +42,7 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
 
   if [ -z "$1" ]; then set -- /bin/ash "$@"; fi
 
-  if [ -d "$APP_PATH" -a "$1" = "rails" -o "$1" = "sidekiq" -o "$1" = "rake" -o "$1" = "bundle" -o "$1" = "shoryuken" ]; then
+  if [ -d "$APP_PATH" -a "$1" = "rails" -o "$1" = "sidekiq" -o "$1" = "rake" -o "$1" = "bundle" -o "$1" = "shoryuken" -o "$1" = "guard" ]; then
     while [ -f $APP_SETUP_LOCK ]; do wait_setup; done
     
     lock_setup
