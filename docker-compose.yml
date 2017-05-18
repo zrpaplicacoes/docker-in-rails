@@ -34,79 +34,54 @@ services:
       dockerfile: dev.Dockerfile
     volumes:
       - .:/srv/app
-      - bundler-data:/srv/bin/app/bundle
+      - bundler-data:/usr/local/bundle
     environment: &env
-      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/docker_in_rails_development
-      REDIS_URL: redis://redis.local:6379
-      SIDEKIQ_CONCURRENCY: 5
-      SIDEKIQ_TIMEOUT: 10
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db:5432/docker_in_rails_development
+      REDIS_URL: redis://redis:6379
       RACK_ENV: development
       RAILS_ENV: development
-      AWS_DEFAULT_REGION: sa-east-1
-      AWS_REGION: sa-east-1
+    depends_on:
+      - db
+      - redis
     stdin_open: true
     tty: true
 
   app:
     <<: *base
-    hostname: app
     environment: *env
     command: bundle exec rails server -p 3000 -b 0.0.0.0
     ports: ['80:3000']
-    links:
-      - db:db.local
-      - redis:redis.local
 
   sidekiq:
     <<: *base
-    hostname: sidekiq
     command: bundle exec sidekiq -C config/sidekiq.yml
-    links:
-      - db:db.local
-      - redis:redis.local
-    ports: []
     environment: *env
 
   shoryuken:
     <<: *base
-    hostname: shoryuken
     command: bundle exec shoryuken --rails -C config/shoryuken.yml
-    links:
-      - db:db.local
-      - redis:redis.local
-    ports: []
     environment: *env
 
   bundler:
     <<: *base
-    hostname: builder
     command: bundle install -j4 --retry 3
     links: []
-    ports: []
     environment: *env
 
-  test:
+  guard:
     <<: *base
     command: bundle exec guard start --no-bundler-warning --no-interactions
-    links:
-      - db:db.local
-      - redis:redis.local
     environment:
       <<: *env
-      DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/docker_in_rails_test
+      DATABASE_URL: postgres://postgres:1x2y3z4u@db:5432/docker_in_rails_test
       RACK_ENV: test
       RAILS_ENV: test
-    ports: []
 
-  ci:
+  spec:
     <<: *base
     command:  bundle exec spec
-    links:
-      - db:db.local
-      - redis:redis.local
     environment:
       <<: *env
       DATABASE_URL: postgres://postgres:1x2y3z4u@db.local:5432/docker_in_rails_test
       RACK_ENV: test
       RAILS_ENV: test
-    ports: []
