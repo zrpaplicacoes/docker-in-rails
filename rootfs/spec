@@ -5,11 +5,11 @@ puts "\033[0;32m:::: Running application quality approvement...\033[0m"
 
 if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   puts "Testing application security..."
-  exec('brakeman', '-z', '-A', '-q')
+  system('brakeman', '-z', '-A', '-q')
   puts "\033[0;32mTesting spec/ folder...\033[0m"
   
-  exec('check_or_setup_db')
-  exec('rspec', 'spec')
+  system('check_or_setup_db')
+  system('rspec', 'spec')
   
   puts "\033[0;32mFinished quality approvement...\033[0m"
   0
