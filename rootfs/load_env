@@ -30,7 +30,7 @@ elsif ENV['RAILS_ENV'] == 'production'
   s3_enc_client = Aws::S3::Encryption::Client.new(
     client: s3,
     kms_key_id: key.target_key_id,
-    kms_client: kms_client
+    kms_client: kms
   )
   
   # retrieve and decrypt .env from s3
