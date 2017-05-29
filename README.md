@@ -17,7 +17,7 @@ CMD ["mycustomcmd"]
 
 # Handling permissions on Linux
 
-Before starting running your container, ensure to provide to docker run your user_id, thus handling the permissions problem that may arise during development. To do so you must use an environment variable USER_ID, so you can do `docker run --rm -ti -e USER_ID=$UID -v /myapplication/root:/srv/app -w /srv/app zrpaplicacoes/docker-in-rails:latest` to ensure that the UID used inside the container is the same as the host machine.
+Before starting running your container, ensure to provide to docker run your user_id, thus handling the permissions problem that may arise during development. To do so you must use an environment variable USER_ID, so you can do `docker run --rm -ti -e USER_ID=$UID -v /myapplication/root:/home/app/web -w /home/app/web zrpaplicacoes/docker-in-rails:latest` to ensure that the UID used inside the container is the same as the host machine.
 
 # Options
 

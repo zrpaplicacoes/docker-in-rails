@@ -9,7 +9,7 @@ require 'active_record'
 
 include ActiveRecord::Tasks
 
-DatabaseTasks.root = File.expand_path('/srv/app')
+DatabaseTasks.root = File.expand_path('/home/app/web')
 DatabaseTasks.db_dir = File.join DatabaseTasks.root, 'db'
 DatabaseTasks.env = ENV.fetch 'ENV', ENV.fetch('RAILS_ENV', 'development')
 

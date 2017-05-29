@@ -7,8 +7,8 @@ LABEL license="GPLv3"
 
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
-    APP_PATH=/srv/app \
-    PATH=/usr/local/bin/:/srv/app/bin/:/srv/app/:$PATH \
+    APP_PATH=/home/app/web \
+    PATH=/usr/local/bin/:/home/app/web/bin/:/home/app/web/:$PATH \
     RUBY_VERSION=2.2.7
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
@@ -29,6 +29,6 @@ RUN set -e; \
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
 
-VOLUME /srv/app
+VOLUME /home/app/web
 ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]
 CMD ["/bin/ash"]

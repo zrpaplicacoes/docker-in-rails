@@ -33,7 +33,7 @@ services:
       context: .
       dockerfile: dev.Dockerfile
     volumes:
-      - .:/srv/app
+      - .:/home/app/web
       - bundler-data:/usr/local/bundle
     environment: &env
       DATABASE_URL: postgres://postgres:1x2y3z4u@db:5432/docker_in_rails_development
