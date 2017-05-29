@@ -28,6 +28,7 @@ configure_user() {
 
   echo ":::: Starting with (UID: $UID, USER: $USER)"
   adduser -u $UID -s /bin/ash -h /home/$USER -D $USER || echo "" > /dev/null
+  chown -R app:app *
 }
 
 # Install script dependencies
