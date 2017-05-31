@@ -29,10 +29,12 @@ RUN set -e; \
   	gosu nobody true; \
   	apk del .gosu-deps
 
-RUN echo 'require "irb/completion"' >> "/home/app/.irbrc" && \
+RUN mkdir /home/app && \
+    echo 'require "irb/completion"' >> "/home/app/.irbrc" && \
     echo 'IRB.conf[:AUTO_INDENT] = true' >> "/home/app/.irbrc" && \
     echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "/home/app/.irbrc" && \
     echo 'IRB.conf[:HISTORY_FILE] = "/home/app/web/.irb_history"' >> "/home/app/.irbrc"
+
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
 
