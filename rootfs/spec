@@ -15,6 +15,7 @@ if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   else
     system('bundle', 'exec', 'setup_pg')
   end
+  sleep 5
   result = system('bundle', 'exec', 'rspec', 'spec')
 
   puts "\033[0;32mFinished quality approvement...\033[0m"
