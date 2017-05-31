@@ -10,10 +10,11 @@ ENV RUNTIME_PACKAGES="nodejs alpine-sdk nodejs curl tzdata" \
     GOSU_VERSION=1.10 \
     HOME_PATH=/home/app \
     APP_PATH=/home/app/web \
-    PATH=/usr/local/bin/:/home/app/web/bin/:/home/app/web/:/home/app/.gems/bin/:$PATH \
+    PATH=/usr/local/bin/:/home/app/web/bin/:/home/app/web/:/home/app/.bundler/bin/:$PATH \
     HISTFILE=/home/app/web/.ash_history \
-    GEM_HOME=/home/app/.gems \
     BUNDLE_PATH=/home/app/.gems \
+    BUNDLE_BIN=/home/app/.gems/bin \
+    BUNDLE_APP_CONFIG=/home/app/.gems \
     IRBRC=/home/app/.irbrc
 
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
@@ -36,6 +37,12 @@ RUN mkdir $HOME_PATH && \
     echo 'IRB.conf[:AUTO_INDENT] = true' >> "$HOME_PATH/.irbrc" && \
     echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "$HOME_PATH/.irbrc" && \
     echo 'IRB.conf[:HISTORY_FILE] = "$APP_PATH/.irb_history"' >> "$HOME_PATH/.irbrc"
+
+RUN mkdir $BUNDLE_PATH && \
+    echo '---' >> "$BUNDLE_PATH/config" && \
+    echo 'BUNDLE_RETRY: "3"' >> "$BUNDLE_PATH/config" && \
+    echo 'BUNDLE_JOBS: "4"' >> "$BUNDLE_PATH/config" && \
+    echo 'BUNDLE_DISABLE_SHARED_GEMS: "true"' >> "$BUNDLE_PATH/config"
 
 # geckodriver
 RUN curl -Ls https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz -O && \
