@@ -8,6 +8,7 @@ LABEL license="GPLv3"
 ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     RUBY_VERSION=2.4.1 \
     GOSU_VERSION=1.10 \
+    HOME_PATH=/home/app \
     APP_PATH=/home/app/web \
     PATH=/usr/local/bin/:/home/app/web/bin/:/home/app/web/:/home/app/.gems/bin/:$PATH \
     HISTFILE=/home/app/web/.ash_history \
@@ -35,7 +36,7 @@ RUN mkdir /home/app && \
     echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "/home/app/.irbrc" && \
     echo 'IRB.conf[:HISTORY_FILE] = "/home/app/web/.irb_history"' >> "/home/app/.irbrc"
 
-WORKDIR /
+WORKDIR $APP_PATH
 COPY rootfs/* /usr/local/bin/
 
 ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]
