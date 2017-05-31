@@ -33,7 +33,9 @@ rescue ActiveRecord::PendingMigrationError
 rescue ActiveRecord::NoDatabaseError
   puts "\033[0;31m:::: Database not found...\033[0m"
   return 1 unless DatabaseTasks.create_current
-  if DatabaseTasks.load_schema_current
+  type ||= 'ruby'
+  type = 'sql' if File.exist?(File.join(DatabaseTasks.db_dir, 'structure.sql'))
+  if DatabaseTasks.load_schema_current(type)
     puts "\033[0;32m:::: Schema loaded correctly...\033[0m"
   else
     puts "\033[0;31m:::: Schema could not be loaded...\033[0m"

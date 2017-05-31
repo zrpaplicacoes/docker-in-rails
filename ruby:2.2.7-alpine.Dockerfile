@@ -29,6 +29,5 @@ RUN set -e; \
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
 
-VOLUME /home/app/web
 ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]
 CMD ["/bin/ash"]
