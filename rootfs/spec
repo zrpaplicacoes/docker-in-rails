@@ -6,17 +6,17 @@ puts "\033[0;32m:::: Running application quality approvement...\033[0m"
 if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   puts "Testing application security..."
   system('brakeman', '-z', '-A', '-q')
-  
+
   puts "\033[0;32mTesting spec/ folder...\033[0m"
   if ENV['DATABASE_ADAPTER'] == 'postgresql'
-    system('bundle', 'exec', 'setup_postgresql')
+    system('bundle', 'exec', 'setup_pg')
   elsif ENV['DATABASE_ADAPTER'] == 'mysql2'
     system('bundle', 'exec', 'setup_mysql2')
   else
-    system('bundle', 'exec', 'setup_postgresql')
+    system('bundle', 'exec', 'setup_pg')
   end
   result = system('bundle', 'exec', 'rspec', 'spec')
-  
+
   puts "\033[0;32mFinished quality approvement...\033[0m"
   result ? 0 : 1
 else
