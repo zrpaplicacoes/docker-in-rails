@@ -33,16 +33,16 @@ RUN set -e; \
     apk del .gosu-deps
 
 RUN mkdir $HOME_PATH && \
-    echo 'require "irb/completion"' >> "$HOME_PATH/.irbrc" && \
-    echo 'IRB.conf[:AUTO_INDENT] = true' >> "$HOME_PATH/.irbrc" && \
-    echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "$HOME_PATH/.irbrc" && \
-    echo 'IRB.conf[:HISTORY_FILE] = "$APP_PATH/.irb_history"' >> "$HOME_PATH/.irbrc"
+    echo 'require "irb/completion"' >> "/home/app/.irbrc" && \
+    echo 'IRB.conf[:AUTO_INDENT] = true' >> "/home/app/.irbrc" && \
+    echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "/home/app/.irbrc" && \
+    echo 'IRB.conf[:HISTORY_FILE] = "/home/app/web/.irb_history"' >> "/home/app/.irbrc"
 
 RUN mkdir $BUNDLE_PATH && \
     echo '---' >> "$BUNDLE_PATH/config" && \
-    echo 'BUNDLE_RETRY: "3"' >> "$BUNDLE_PATH/config" && \
-    echo 'BUNDLE_JOBS: "4"' >> "$BUNDLE_PATH/config" && \
-    echo 'BUNDLE_DISABLE_SHARED_GEMS: "true"' >> "$BUNDLE_PATH/config"
+    echo 'BUNDLE_RETRY: "3"' >> "/home/app/.gems/config" && \
+    echo 'BUNDLE_JOBS: "4"' >> "/home/app/.gems/config" && \
+    echo 'BUNDLE_DISABLE_SHARED_GEMS: "true"' >> "/home/app/.gems/config"
 
 # geckodriver
 RUN curl -Ls https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz -O && \
