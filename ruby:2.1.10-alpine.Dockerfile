@@ -11,7 +11,8 @@ ENV RUNTIME_PACKAGES="alpine-sdk nodejs curl tzdata" \
     APP_PATH=/home/app/web \
     PATH=/usr/local/bin/:/home/app/web/bin/:/home/app/web/:/home/app/.gems/bin/:$PATH \
     HISTFILE=/home/app/web/.ash_history \
-    GEM_HOME=/home/app/.gems
+    GEM_HOME=/home/app/.gems \
+    IRBRC=/home/app/.irbrc
     
 RUN apk add --no-cache --update $RUNTIME_PACKAGES;
 
@@ -28,9 +29,10 @@ RUN set -e; \
   	gosu nobody true; \
   	apk del .gosu-deps
 
-RUN echo 'require "irb/completion"' >> "$APP_PATH/.irbrc" && \
-    echo 'IRB.conf[:AUTO_INDENT] = true' >> "$APP_PATH/.irbrc" && \
-    echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "$APP_PATH/.irbrc"
+RUN echo 'require "irb/completion"' >> "/home/app/.irbrc" && \
+    echo 'IRB.conf[:AUTO_INDENT] = true' >> "/home/app/.irbrc" && \
+    echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "/home/app/.irbrc" && \
+    echo 'IRB.conf[:HISTORY_FILE] = "/home/app/web/.irb_history"' >> "/home/app/.irbrc"
 
 WORKDIR /
 COPY rootfs/* /usr/local/bin/
