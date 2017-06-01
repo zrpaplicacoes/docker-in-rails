@@ -1,6 +1,9 @@
 #!/usr/local/bin/ruby
 # frozen_string_literal: true
 
+require 'bundler'
+Bundler.setup
+
 puts "\033[0;32m:::: Running application quality approvement...\033[0m"
 
 if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'

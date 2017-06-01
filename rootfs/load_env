@@ -1,6 +1,9 @@
 #!/usr/local/bin/ruby
 # frozen_string_literal: true
 
+require 'bundler'
+Bundler.setup
+
 def parse(file_contents)
   file_contents.each_line.inject('') do |result, line|
     return result unless (line =~ /(RAILS_ENV|RACK_ENV)/).nil?
