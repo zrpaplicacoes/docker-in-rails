@@ -94,12 +94,6 @@ then
   echo -e "${BRed}:::: Booting application on unknow mode...${Color_Off}"
 fi
 
-# calls command
-if [ -z $RUN_AS_ROOT ]; then
-  configure_user
-  echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
-  /usr/local/bin/gosu $USER "$@"
-else
-  echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
-  exec "$@"
-fi
+configure_user
+echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
+/usr/local/bin/gosu $USER "$@"
