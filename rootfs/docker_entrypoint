@@ -92,11 +92,16 @@ if [ "$RAILS_ENV" = "production" ]; then
   echo -e "${BRed}:::: Booting application on production mode...${Color_Off}"
 fi
 
-if [ -z $RAILS_ENV ]
-then
+if [ -z $RAILS_ENV ]; then
   echo -e "${BRed}:::: Booting application on unknow mode...${Color_Off}"
 fi
 
-configure_user
-echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
-/usr/local/bin/gosu $USER "$@"
+
+if [ "$RAILS_ENV" = "production" ]; then
+  echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
+  exec "$@"
+else
+  configure_user
+  echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
+  /usr/local/bin/gosu $USER "$@"
+fi
