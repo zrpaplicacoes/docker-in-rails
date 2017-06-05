@@ -28,8 +28,8 @@ configure_user() {
 
   echo ":::: Starting with (UID: $UID, USER: $USER)"
   adduser -u $UID -s /bin/ash -h /home/$USER -D $USER || echo "" > /dev/null
-  
-  if [ "$RAILS_ENV" = "development" ]; then
+
+  if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
     chown -R app:app $HOME_PATH
   fi
 }
