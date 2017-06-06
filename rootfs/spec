@@ -7,8 +7,9 @@ Bundler.setup
 puts "\033[0;32m:::: Running application quality approvement...\033[0m"
 
 if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
+  export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
   puts "Testing application security..."
-  system('brakeman', '-z', '-A', '-q')
+  system('bundle', 'exec', 'brakeman', '-z', '-A', '-q')
 
   puts "\033[0;32mTesting spec/ folder...\033[0m"
   if ENV['DATABASE_ADAPTER'] == 'postgresql'
