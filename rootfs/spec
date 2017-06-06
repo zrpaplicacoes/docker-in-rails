@@ -14,8 +14,8 @@ if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   result = system('bundle', 'exec', 'rspec', 'spec')
 
   puts "\033[0;32mFinished quality approvement...\033[0m"
-  result ? 0 : 1
+  exit(result ? 0 : 1)
 else
   puts ":::: Environment error... RAILS_ENV should be test, currently is #{ENV['RAILS_ENV'] || 'empty'}"
-  1
+  exit(1)
 end
