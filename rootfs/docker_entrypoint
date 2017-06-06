@@ -66,7 +66,7 @@ if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
     if [ -z $SKIP_DB_SETUP ]; then
       echo ":::: Checking database consistency against current schema..."
 
-      if [ "$RAILS_ENV" = "test" -a -n $DROP_DATABASE_IF_TEST ]; then
+      if [ "$RAILS_ENV" = "test" -a "$DROP_DATABASE_IF_TEST" = "enabled" ]; then
         bundle exec rake db:drop
       fi
 

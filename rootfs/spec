@@ -11,14 +11,6 @@ if ENV['RAILS_ENV'] && ENV['RAILS_ENV'] == 'test'
   system('bundle', 'exec', 'brakeman', '-z', '-A', '-q')
 
   puts "\033[0;32mTesting spec/ folder...\033[0m"
-  if ENV['DATABASE_ADAPTER'] == 'postgresql'
-    system('bundle', 'exec', 'setup_pg')
-  elsif ENV['DATABASE_ADAPTER'] == 'mysql2'
-    system('bundle', 'exec', 'setup_mysql2')
-  else
-    system('bundle', 'exec', 'setup_pg')
-  end
-  sleep 5
   result = system('bundle', 'exec', 'rspec', 'spec')
 
   puts "\033[0;32mFinished quality approvement...\033[0m"
