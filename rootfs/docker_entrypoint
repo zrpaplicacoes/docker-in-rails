@@ -12,6 +12,7 @@ echo -e "${BGreen}:::: Environment loaded!${Color_Off}"
 
 # Export default variables
 export APP_PATH='/home/app/web'
+export APP_BIN_PATH='/home/app/web/bin'
 export APP_TEMP_PATH="$APP_PATH/tmp"
 export APP_SETUP_LOCK="$APP_TEMP_PATH/setup.lock"
 export APP_SETUP_WAIT="2"
@@ -31,6 +32,11 @@ configure_user() {
 
   if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
     chown -R app:app $HOME_PATH
+
+    # always upgrade bin folder to executable
+    if [ -d "$APP_BIN_PATH" ]; then
+      chmod +x $APP_BIN_PATH -R
+    fi
   fi
 }
 
