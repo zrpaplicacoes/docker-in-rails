@@ -5,8 +5,8 @@ require 'optparse'
 require 'colorize'
 
 IMAGE = 'zrpaplicacoes/docker-in-rails'
-LATEST_VERSION = '2.4.1'
-VERSIONS = ['2.4.1', '2.2.7', '2.1.10']
+LATEST_VERSION = '2.4.2'
+VERSIONS = ['2.4.2', '2.4.1', '2.2.7', '2.1.10']
 
 def dockerfile(version)
   "ruby:#{version}-alpine.Dockerfile"
@@ -51,6 +51,6 @@ if config[:all]
     puts "\n" unless ruby_version == VERSIONS.last
   end
 else
-  config[:ruby_version] ||= '2.4.1'
+  config[:ruby_version] ||= LATEST_VERSION
   build(config[:ruby_version], config[:tag])
 end
