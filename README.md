@@ -3,12 +3,17 @@
 Docker in Rails is a base image that provides a small set of features to ease developing Ruby on Rails application using docker and docker-compose. This image is built on top of ruby alpine images.
 The image can be found [here](https://hub.docker.com/r/zrpaplicacoes/docker-in-rails/).
 
+# Newer Images
+
+From Ruby 2.4.3 and 2.5.x, we have removed Gecko Driver, Selenium and PhantomJS from the default image. We've also removed the -latest suffix of the image.
+
 # Using the image
 
-This image is intended to be use as a base image for your own Dockerfile. To use it, simply reference it in the `FROM` clause at the top of the dockerfile:
+This image is intended to be used as a base image for your own Dockerfile. To use it, simply reference it in the `FROM` clause at the top of the dockerfile:
 
 ```
-FROM zrpaplicacoes/docker-in-rails:2.4.1-latest
+FROM zrpaplicacoes/docker-in-rails:2.5.0
+FROM zrpaplicacoes/docker-in-rails:2.5.0-dev
 ...
 ...
 ENTRYPOINT ["mycustomentrypoint"]
@@ -33,7 +38,11 @@ During initialization you can pass some environment variables to change entrypoi
 
 # Versions
 
-*   zrpaplicacoes/docker-in-rails:2.4.1-latest (zrpaplicacoes/docker-in-rails:latest)
+*   zrpaplicacoes/docker-in-rails:2.5.0-dev (zrpaplicacoes/docker-in-rails:dev)
+*   zrpaplicacoes/docker-in-rails:2.5.0 (zrpaplicacoes/docker-in-rails:latest)
+*   zrpaplicacoes/docker-in-rails:2.4.3
+*   zrpaplicacoes/docker-in-rails:2.4.2-latest
+*   zrpaplicacoes/docker-in-rails:2.4.1-latest
 *   zrpaplicacoes/docker-in-rails:2.2.7-latest
 *   zrpaplicacoes/docker-in-rails:2.1.10-latest
 

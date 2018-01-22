@@ -5,15 +5,24 @@ require 'optparse'
 require 'colorize'
 
 IMAGE = 'zrpaplicacoes/docker-in-rails'
-LATEST_VERSION = '2.4.2'
-VERSIONS = ['2.4.2', '2.4.1', '2.2.7', '2.1.10']
+LATEST_VERSION = '2.5.0'
+VERSIONS = ['2.5.0', '2.4.3', '2.4.2', '2.4.1', '2.2.7', '2.1.10']
 
 def dockerfile(version)
   "ruby:#{version}-alpine.Dockerfile"
 end
 
 def tag(version, user_tag)
-  "#{IMAGE}:#{version}-#{user_tag}"
+  semver = version.split "."
+  major = semver[0].to_i;
+  minor = semver[1].to_i;
+  patch = semver[2].to_i;
+
+  if major >= 2 && (minor >= 5 || minor === 4 && patch >= 3)
+    "#{IMAGE}:#{version}"
+  else
+    "#{IMAGE}:#{version}-#{user_tag}"
+  end
 end
 
 def build(ruby_version, tag, opts = {})
@@ -23,12 +32,17 @@ def build(ruby_version, tag, opts = {})
                   '-t', tag(ruby_version, tag), '.']
 
   build_config = build_config.reject(&:empty?)
-  system(*build_config)
 
-  puts "Successfully built #{tag(ruby_version, tag)}".colorize(:green)
+  if system(*build_config)
+    puts "Successfully built #{tag(ruby_version, tag)}".colorize(:green)
+  else
+    puts "Error while building #{tag(ruby_version, tag)}".colorize(:red)
+    exit(0)
+  end
 
-  if ruby_version == LATEST_VERSION
-    system('docker', 'tag', tag(ruby_version, tag), "#{IMAGE}:latest")
+  if ruby_version.match(LATEST_VERSION)
+    tag = ruby_version.match('dev') ? 'dev' : 'latest'
+    system('docker', 'tag', tag(ruby_version, tag), "#{IMAGE}:#{tag}")
   end
 end
 
