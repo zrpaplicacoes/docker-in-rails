@@ -4,7 +4,7 @@ LABEL author="ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>"
 LABEL vendor="ZRP Aplicações Informáticas LTDA - ME"
 LABEL license="GPLv3"
 
-ENV RUNTIME_PACKAGES="alpine-sdk curl gosu tzdata" \
+ENV RUNTIME_PACKAGES="alpine-sdk curl tzdata" \
     RUBY_VERSION=2.5.0 \
     HOME_PATH=/home/app \
     APP_PATH=/home/app/web \
@@ -15,8 +15,7 @@ ENV RUNTIME_PACKAGES="alpine-sdk curl gosu tzdata" \
     BUNDLE_APP_CONFIG=/home/app/.gems \
     IRBRC=/home/app/.irbrc
 
-RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories ; \
-    apk update; \
+RUN apk update; \
     apk add --no-cache --update $RUNTIME_PACKAGES;
 
 RUN mkdir $HOME_PATH && \

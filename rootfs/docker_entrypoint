@@ -108,5 +108,9 @@ if [ "$RAILS_ENV" = "production" ]; then
 else
   configure_user
   echo -e ":::: Executing the given command: ${BBlue}'$@'${Color_Off}"
-  /usr/bin/gosu $USER "$@"
+  if [ -f /usr/bin/gosu ]; then
+    /usr/bin/gosu $USER "$@"
+  else
+    exec "$@"
+  fi
 fi
