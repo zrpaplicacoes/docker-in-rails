@@ -6,32 +6,33 @@ LABEL license="GPLv3"
 
 ENV RUNTIME_PACKAGES="alpine-sdk curl tzdata" \
     RUBY_VERSION=2.5.0 \
-    HOME_PATH=/home/app \
-    APP_PATH=/home/app/web \
-    PATH=/usr/local/bin/:/home/app/web/bin/:/home/app/web/:/home/app/.bundler/bin/:$PATH \
-    HISTFILE=/home/app/web/.ash_history \
-    BUNDLE_PATH=/home/app/.gems \
-    BUNDLE_BIN=/home/app/.gems/bin \
-    BUNDLE_APP_CONFIG=/home/app/.gems \
-    IRBRC=/home/app/.irbrc
+    HOME_PATH=/home \
+    APP_PATH=/home/app \
+    PATH=/usr/local/bin/:/home/app/bin/:/home/app/:/home/.bundler/bin/:$PATH \
+    HISTFILE=/home/app/.ash_history \
+    BUNDLE_PATH=/home/.gems \
+    BUNDLE_BIN=/home/.gems/bin \
+    BUNDLE_APP_CONFIG=/home/.gems \
+    IRBRC=/home/.irbrc
 
-RUN apk update; \
-    apk add --no-cache --update $RUNTIME_PACKAGES;
+RUN addgroup -g 1000 app \
+    && adduser -u 1000 -G app -s /bin/sh -D app \
+    && apk update \
+    && apk add --no-cache --update $RUNTIME_PACKAGES
 
-RUN mkdir $HOME_PATH && \
-    echo 'require "irb/completion"' >> "/home/app/.irbrc" && \
-    echo 'IRB.conf[:AUTO_INDENT] = true' >> "/home/app/.irbrc" && \
-    echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "/home/app/.irbrc" && \
-    echo 'IRB.conf[:HISTORY_FILE] = "/home/app/web/.irb_history"' >> "/home/app/.irbrc"
+RUN echo 'require "irb/completion"' >> "/home/.irbrc" && \
+    echo 'IRB.conf[:AUTO_INDENT] = true' >> "/home/.irbrc" && \
+    echo 'IRB.conf[:SAVE_HISTORY] = 1000' >> "/home/.irbrc" && \
+    echo 'IRB.conf[:HISTORY_FILE] = "/home/app/.irb_history"' >> "/home/.irbrc"
 
 RUN mkdir $BUNDLE_PATH && \
     echo '---' >> "$BUNDLE_PATH/config" && \
-    echo 'BUNDLE_RETRY: "3"' >> "/home/app/.gems/config" && \
-    echo 'BUNDLE_JOBS: "4"' >> "/home/app/.gems/config" && \
-    echo 'BUNDLE_DISABLE_SHARED_GEMS: "true"' >> "/home/app/.gems/config"
+    echo 'BUNDLE_RETRY: "3"' >> "/home/.gems/config" && \
+    echo 'BUNDLE_JOBS: "4"' >> "/home/.gems/config" && \
+    echo 'BUNDLE_DISABLE_SHARED_GEMS: "true"' >> "/home/.gems/config"
 
-WORKDIR $HOME_PATH
+WORKDIR $APP_PATH
 COPY rootfs/* /usr/local/bin/
 
-ENTRYPOINT ["/usr/local/bin/docker_entrypoint"]
+ENTRYPOINT ["/usr/local/bin/docker_entrypoint.2.5.0"]
 CMD ["/bin/ash"]

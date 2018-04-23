@@ -15,7 +15,7 @@ DatabaseTasks.db_dir = File.join DatabaseTasks.root, 'db'
 DatabaseTasks.env = ENV.fetch 'ENV', ENV.fetch('RAILS_ENV', 'development')
 
 exit begin
-  connection_tries ||= 3
+  connection_tries ||= 5
   ActiveRecord::Base.establish_connection
   ActiveRecord::Migration.check_pending!
   0
@@ -29,7 +29,7 @@ rescue PG::ConnectionBad
 
 rescue ActiveRecord::PendingMigrationError
   puts "\033[0;33m:::: Migrations are pending, running latest migrations\033[0m"
-  return 1 unless exec('bundle exec rake db:migrate')
+  return 1 unless exec('bundle exec rails db:migrate')
   0
 rescue ActiveRecord::NoDatabaseError
   puts "\033[0;31m:::: Database not found...\033[0m"
