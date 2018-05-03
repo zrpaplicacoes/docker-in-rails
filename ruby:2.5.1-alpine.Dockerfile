@@ -1,19 +1,19 @@
-FROM ruby:2.2.7-alpine
+FROM ruby:2.5.1-alpine
 
 LABEL author="ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>"
 LABEL vendor="ZRP Aplicações Informáticas LTDA - ME"
 LABEL license="GPLv3"
 
 ENV RUNTIME_PACKAGES="alpine-sdk curl tzdata" \
-    RUBY_VERSION=2.2.7 \
+    RUBY_VERSION=2.5.1 \
     HOME_PATH=/home \
     APP_PATH=/home/app \
+    PATH=/usr/local/bin/:/home/app/bin/:/home/app/:/home/.bundler/bin/:$PATH \
     HISTFILE=/home/app/.ash_history \
     BUNDLE_PATH=/home/.gems \
     BUNDLE_BIN=/home/.gems/bin \
     BUNDLE_APP_CONFIG=/home/.gems \
-    IRBRC=/home/.irbrc \
-    PATH=/usr/local/bin/:/home/app/bin/:/home/app/:/home/.gems/bin/:$PATH
+    IRBRC=/home/.irbrc
 
 RUN addgroup -g 1000 app \
     && adduser -u 1000 -G app -s /bin/sh -D app \

@@ -34,5 +34,5 @@ RUN mkdir $BUNDLE_PATH && \
 WORKDIR $APP_PATH
 COPY rootfs/* /usr/local/bin/
 
-ENTRYPOINT ["/usr/local/bin/docker_entrypoint.2.5.0"]
+ENTRYPOINT ["/usr/local/bin/docker_entrypoint.new"]
 CMD ["/bin/ash"]

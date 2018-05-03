@@ -5,8 +5,8 @@ require 'optparse'
 require 'colorize'
 
 IMAGE = 'zrpaplicacoes/docker-in-rails'
-LATEST_VERSION = '2.5.0'
-VERSIONS = ['2.5.0', '2.4.3', '2.4.2', '2.4.1', '2.2.7', '2.1.10']
+LATEST_VERSION = '2.5.1'
+VERSIONS = ['2.5.1', '2.5.0', '2.4.3', '2.4.2', '2.4.1', '2.2.10', '2.2.7', '2.1.10']
 
 def dockerfile(version)
   "ruby:#{version}-alpine.Dockerfile"
@@ -18,11 +18,7 @@ def tag(version, user_tag)
   minor = semver[1].to_i;
   patch = semver[2].to_i;
 
-  if major >= 2 && (minor >= 5 || minor === 4 && patch >= 3)
-    "#{IMAGE}:#{version}"
-  else
-    "#{IMAGE}:#{version}-#{user_tag}"
-  end
+  "#{IMAGE}:#{version}"
 end
 
 def build(ruby_version, tag, opts = {})

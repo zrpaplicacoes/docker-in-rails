@@ -1,11 +1,11 @@
-FROM ruby:2.2.7-alpine
+FROM ruby:2.2.10-alpine
 
 LABEL author="ZRP Aplicacoes Informaticas LTDA <zrp@zrp.com.br>"
 LABEL vendor="ZRP Aplicações Informáticas LTDA - ME"
 LABEL license="GPLv3"
 
 ENV RUNTIME_PACKAGES="alpine-sdk curl tzdata" \
-    RUBY_VERSION=2.2.7 \
+    RUBY_VERSION=2.2.10 \
     HOME_PATH=/home \
     APP_PATH=/home/app \
     HISTFILE=/home/app/.ash_history \
