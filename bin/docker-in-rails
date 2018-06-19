@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+# Load dependencies
+require 'logger'
+require 'bundler/setup'
+Bundler.require
+
+# Add main module to $LOAD_PATH
+$LOAD_PATH << Bundler.root.join('lib', 'docker_in_rails').to_s
+
+# Start the application
+require_relative Bundler.root.join('lib', 'docker_in_rails.rb').to_s
+
+DockerInRails.config do |c|
+  c.latest_stable_version = '2.5.1'
+  c.image = 'zrpaplicacoes/docker-in-rails'
+  c.allowed_versions += %w[2.5.1 2.4.4]
+end
+
+options = DockerInRails::Options.parse(ARGV)
+image = DockerInRails::Builder.build(options)
+
+DockerInRails::Repository.push(image) if options[:push]

@@ -1,1 +1,6 @@
 .git*
+.byebug_history
+.ash_history
+.bash_history
+.irb_history
+.*history

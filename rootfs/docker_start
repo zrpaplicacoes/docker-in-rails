@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -e
+
+source /etc/bash.bashrc
+
+echo -e "${BPurple}Running @zrpaplicacoes/docker-in-rails:${RUBY_VERSION}${Color_Off}"
+echo -e "${BRed}`ruby --version` ${Color_Off}"
+
+# Functions
+gems_up_to_date() { bundle check 1> /dev/null; }
+
+# Install script dependencies
+if [ "$RAILS_ENV" = "development" -o "$RAILS_ENV" = "test" ]; then
+  export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+
+  echo -e "${BGreen}Running on ${RAILS_ENV} mode...${Color_Off}"
+
+  if [ -f Gemfile ]; then
+    echo "Checking system bundle"
+    if ! gems_up_to_date; then
+      echo "Installing/Updating Gemfile dependencies"
+      bundle install
+      echo -e "${BGreen}Successfully updated dependencies${Color_Off}"
+    else
+      echo -e "${BGreen}Dependencies are up to date${Color_Off}"
+    fi
+  fi
+fi
+
+if [ "$RAILS_ENV" = "production" ]; then
+  echo -e "${BRed}Booting application on production mode...${Color_Off}"
+fi
+
+# Set the default command
+if [ -z "$1" ]; then
+  set -- /bin/bash "$@"
+else
+  # When $1 is not empty, command was provided, an so, log the command
+  echo -e "Running command ${BBlue}${@}${Color_Off}"
+fi
+
+# Exec the user command
+exec "$@"
+

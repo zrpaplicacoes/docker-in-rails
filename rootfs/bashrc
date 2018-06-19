@@ -1,3 +1,7 @@
+#!/bin/bash
+
+IP=$(hostname -i)
+
 # Reset
 Color_Off='\033[0m'       # Text Reset
 
@@ -50,3 +54,66 @@ IBlue='\033[0;94m'        # Blue
 IPurple='\033[0;95m'      # Purple
 ICyan='\033[0;96m'        # Cyan
 IWhite='\033[0;97m'       # White
+
+function aws_region_name {
+  case $1 in
+    us-east-1)
+      echo -e "Virginia"
+      ;;
+    us-east-2)
+      echo -e "Ohio"
+      ;;
+    us-west-1)
+      echo -e "California"
+      ;;
+    us-west-2)
+      echo -e "Oregon"
+      ;;
+    ap-northeast-1)
+      echo -e "Tokyo"
+      ;;
+    ap-northeast-2)
+      echo -e "Seoul"
+      ;;
+    ap-northeast-3)
+      echo -e "Osaka-Local"
+      ;;
+    ap-south-1)
+      echo -e "Mumbai"
+      ;;
+    ap-southeast-1)
+      echo -e "Singapore"
+      ;;
+    ap-southeast-2)
+      echo -e "Sydney"
+      ;;
+    ca-central-1)
+      echo -e "Central"
+      ;;
+    cn-north-1)
+      echo -e "Beijing"
+      ;;
+    cn-northwest-1)
+      echo -e "Ningxia"
+      ;;
+    eu-central-1)
+      echo -e "Frankfurt"
+      ;;
+    eu-west-1)
+      echo -e "Ireland"
+      ;;
+    eu-west-2)
+      echo -e "London"
+      ;;
+    eu-west-3)
+      echo -e "Paris"
+      ;;
+    sa-east-1)
+      echo -e "Sao Paulo"
+      ;;
+    *)
+      echo -e ""
+  esac
+}
+
+export PS1="\[$BPurple\]@\u\[$Color_Off\]\[$BCyan\]":$IP/32"\[$Color_Off\] \t \[$BGreen\]$(if [ -z $AWS_REGION ]; then echo -e ""; else echo -e "($(aws_region_name $AWS_REGION)) " ; fi)\[$Color_Off\]$(if [ "$RAILS_ENV" = "production" ]; then echo -e "⚠️  "; else echo -e ""; fi)\w $\[\033[00m\] ";

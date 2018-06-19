@@ -1,4 +1,0 @@
-echo -e "${BPurple}> Running @zrpaplicacoes/docker-in-rails:${RUBY_VERSION}...${Color_Off}"
-echo -e "${BPurple}> `ruby --version` ${Color_Off}"
-
-
