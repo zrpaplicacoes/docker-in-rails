@@ -38,8 +38,11 @@ During initialization you can pass some environment variables to change entrypoi
 
 # Versions
 
+*   zrpaplicacoes/docker-in-rails:3.1.0 (zrpaplicacoes/docker-in-rails:latest)
+*   zrpaplicacoes/docker-in-rails:2.7.1
+*   zrpaplicacoes/docker-in-rails:2.6.3
 *   zrpaplicacoes/docker-in-rails:2.5.0-dev (zrpaplicacoes/docker-in-rails:dev)
-*   zrpaplicacoes/docker-in-rails:2.5.0 (zrpaplicacoes/docker-in-rails:latest)
+*   zrpaplicacoes/docker-in-rails:2.5.0
 *   zrpaplicacoes/docker-in-rails:2.4.3
 *   zrpaplicacoes/docker-in-rails:2.4.2-latest
 *   zrpaplicacoes/docker-in-rails:2.4.1-latest
